@@ -1,0 +1,334 @@
+% =========================================================
+%  CUADERNILLO DE ESTUDIO - CLASE 3
+%  Seguridad Aplicada a Sistemas de Información
+%  Compilar con: pdfLaTeX (Overleaf o TeX Live/MiKTeX)
+% =========================================================
+\documentclass[11pt,a4paper]{article}
+
+% ----------------- Paquetes -----------------
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\geometry{left=2.4cm,right=2.4cm,top=2.6cm,bottom=2.6cm}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+
+% ----------------- Colores institucionales -----------------
+\definecolor{azulmat}{RGB}{0,84,140}
+\definecolor{griscaja}{RGB}{245,245,245}
+\definecolor{verdesuave}{RGB}{232,244,232}
+\definecolor{naranjasuave}{RGB}{255,244,230}
+\definecolor{azulsuave}{RGB}{232,240,250}
+\definecolor{violetasuave}{RGB}{240,232,250}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=azulmat,
+  urlcolor=azulmat,
+  citecolor=azulmat
+}
+
+% ----------------- Cajas de contenido -----------------
+\newtcolorbox{definicion}[1][Definición]{%
+  enhanced, breakable,
+  colback=azulsuave, colframe=azulmat,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{ejemplo}[1][Ejemplo]{%
+  enhanced, breakable,
+  colback=naranjasuave, colframe=orange!75!black,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{reflexion}[1][Para reflexionar]{%
+  enhanced, breakable,
+  colback=verdesuave, colframe=green!55!black,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{clave}[1][Idea clave]{%
+  enhanced, breakable,
+  colback=griscaja, colframe=black!70,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{respuesta}[1][Respuesta]{%
+  enhanced, breakable,
+  colback=violetasuave, colframe=violet!60!black,
+  fonttitle=\bfseries, title=#1
+}
+
+% ----------------- Encabezado y pie -----------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Seguridad Aplicada a Sistemas de Información}
+\fancyhead[R]{\small Cuadernillo de Estudio --- Clase 3}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ----------------- Formato de títulos -----------------
+\titleformat{\section}{\large\bfseries\color{azulmat}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{azulmat!80!black}}{\thesubsection.}{0.6em}{}
+
+% ----------------- Portada -----------------
+\title{%
+  \rule{\textwidth}{1pt}\\[0.4cm]
+  \textbf{\Large Cuadernillo de Estudio --- Clase 3}\\[0.2cm]
+  \large Términos y Conceptos desde el Punto de Vista de la Seguridad\\[0.2cm]
+  \rule{\textwidth}{1pt}\\[0.4cm]
+  \normalsize Seguridad Aplicada a Sistemas de Información\\
+  Licenciatura en Sistemas de Información --- Facultad de Informática y Diseño\\
+  Docente: Ing.\ Rodrigo Atilio Elgueta\\[0.2cm]
+  \small Ciclo Académico Vigente
+}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\tableofcontents
+\newpage
+
+% =========================================================
+\section{Objetivos de aprendizaje}
+Al finalizar la lectura y el trabajo con este cuadernillo, el estudiante será capaz de:
+
+\begin{itemize}[leftmargin=*]
+  \item Identificar y vincular los elementos de las Tecnologías de la Información (TI) desde el punto de vista de la seguridad.
+  \item Diferenciar con precisión técnica entre \textbf{eventos} e \textbf{incidentes} de seguridad.
+  \item Comprender y aplicar los mecanismos de \textbf{control de acceso} (Identificación, Autenticación, Autorización y No Repudio).
+  \item Entender el modelo de \textbf{Defensa en Profundidad} y las capas de protección de un sistema.
+  \item Formar criterios de implementación segura para la resolución del \textbf{Cuestionario de Seguridad y Hacking (A02)}.
+\end{itemize}
+
+\begin{clave}[Cómo usar este cuadernillo]
+Este material acompaña la Clase 3. Es fundamental para asentar las bases técnicas antes de avanzar hacia la Gestión de Riesgos (Unidad II). Las respuestas de referencia de la autoevaluación se encuentran en la Sección~\ref{sec:respuestas}.
+\end{clave}
+
+% =========================================================
+\section{Eventos vs. Incidentes de Seguridad}
+En el lenguaje cotidiano, solemos usar estas palabras como sinónimos. En la gestión de la seguridad informática (y según estándares como NIST o ISO 27001), tienen significados muy distintos.
+
+\begin{definicion}[Evento de Seguridad]
+Cualquier \textbf{suceso observable} en un sistema o red que pueda ser relevante para la seguridad. Un evento es neutro por naturaleza; simplemente «ocurre».
+\end{definicion}
+
+\begin{definicion}[Incidente de Seguridad]
+Un evento (o una serie de eventos) que \textbf{indica que la seguridad de un sistema ha sido comprometida}, o que existe una amenaza inminente de que lo sea. Un incidente tiene un impacto negativo sobre la Tríada CIA.
+\end{definicion}
+
+\begin{ejemplo}[Diferenciación en la práctica]
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Evento:} Un usuario ingresa su contraseña incorrectamente en el portal web. (El sistema lo registra en el log, es un suceso observable).
+  \item \textbf{Incidente:} El mismo usuario ingresa la contraseña incorrectamente 50 veces en un minuto desde una IP extranjera, y luego el servidor responde con lentitud extrema. (Estamos ante un posible ataque de fuerza bruta o denegación de servicio; la disponibilidad e integridad están en riesgo).
+\end{itemize}
+\end{ejemplo}
+
+\begin{clave}[La regla de oro]
+Todo incidente comienza como un evento, pero \textbf{no todo evento es un incidente}. El rol de los sistemas de detección (como los IDS/IPS o los SIEM) es monitorear millones de eventos para alertar a los analistas solo cuando se configuran como incidentes.
+\end{clave}
+
+% =========================================================
+\section{El Control de Acceso: Más allá de la contraseña}
+Para proteger la Confidencialidad y la Integridad, los sistemas utilizan un proceso escalonado que a menudo confundimos. Se divide en cuatro conceptos fundamentales:
+
+\subsection{1. Identificación}
+Es el acto en el que un usuario \textbf{declara} quién es. Es como mostrar tu DNI en la recepción de un edificio.
+\begin{itemize}[leftmargin=*]
+  \item \textit{Ejemplos:} Un nombre de usuario, un correo electrónico, un número de legajo, una tarjeta RFID.
+  \item \textit{Característica:} Es público y no secreto.
+\end{itemize}
+
+\subsection{2. Autenticación}
+Es el proceso mediante el cual el sistema \textbf{verifica} que la identidad declarada es real. Es como cuando el guardia del edificio compara la foto de tu DNI con tu rostro.
+\begin{itemize}[leftmargin=*]
+  \item \textit{Factores de autenticación:}
+  \begin{enumerate}
+    \item \textbf{Algo que sabes:} Contraseña, PIN, pregunta de seguridad.
+    \item \textbf{Algo que tienes:} Token físico, celular (SMS/App), tarjeta inteligente.
+    \item \textbf{Algo que eres:} Biometría (huella dactilar, FaceID, escáner de iris).
+  \end{enumerate}
+\end{itemize}
+
+\subsection{3. Autorización}
+Ocurre \textit{después} de una autenticación exitosa. Determina \textbf{qué permisos} tiene el usuario dentro del sistema. Es como cuando el guardia te dice: «Podés subir al piso 3, pero tenés prohibido entrar a la sala de servidores».
+\begin{itemize}[leftmargin=*]
+  \item \textit{Mecanismos:} Listas de Control de Acceso (ACL), Roles (RBAC), atributos (ABAC).
+\end{itemize}
+
+\subsection{4. No Repudio (y Trazabilidad)}
+Garantiza que el usuario \textbf{no pueda negar} haber realizado una acción, gracias a que el sistema dejó un registro (log) inalterable y vinculado a su identidad autenticada.
+
+% =========================================================
+\section{Defensa en Profundidad}
+El diseño de sistemas seguros nunca confía en una única barrera. Si un atacante supera el firewall, no debe encontrar el servidor de base de datos expuesto y sin contraseña.
+
+\begin{definicion}[Defensa en Profundidad]
+Estrategia de seguridad que emplea \textbf{múltiples capas de controles} superpuestos para proteger la información. Si una capa falla, la siguiente debe ser capaz de detener o mitigar la amenaza.
+\end{definicion}
+
+Las capas típicas, desde el exterior hacia el interior (el dato), son:
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Física:} Cercos, guardias, control de acceso biométrico al data center, UPS.
+  \item \textbf{Red:} Firewalls, IDS/IPS, segmentación de redes (VLANs), honeypots.
+  \item \textbf{Host (Sistema Operativo):} Antivirus, endurecimiento (hardening) del OS, parches de seguridad.
+  \item \textbf{Aplicación:} Validación de inputs, Web Application Firewalls (WAF), código seguro.
+  \item \textbf{Datos:} Cifrado en tránsito (TLS/SSL) y en reposo, máscaras de datos, backups.
+\end{enumerate}
+
+% =========================================================
+\section{Protección Criptográfica Básica}
+Para proteger los datos (la capa más interna de la Defensa en Profundidad), utilizamos funciones matemáticas. Es vital no confundir estos dos conceptos:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\textwidth}{@{} p{2.5cm} X X @{}}
+\toprule
+\textbf{Concepto} & \textbf{Definición} & \textbf{Uso típico} \\
+\midrule
+\textbf{Hashing} & Función matemática \textit{unidireccional}. Convierte un dato en una cadena de longitud fija. \textbf{No se puede deshacer}. & Almacenar contraseñas en bases de datos. Verificar integridad de archivos. \\
+\textbf{Cifrado} & Proceso \textit{bidireccional}. Codifica un dato usando una clave y \textbf{se puede descifrar} si se posee la clave correcta. & Proteger mensajes (WhatsApp), bases de datos, tráfico web (HTTPS). \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{reflexion}
+Si un sistema te permite usar el botón «Recuperar mi contraseña» y te envía tu \textit{misma contraseña original} por correo, ese sistema tiene una \textbf{falla de seguridad gravísima}. Significa que no están guardando un Hash de tu contraseña, sino que la tienen guardada en texto plano o con cifrado reversible. Un sistema seguro siempre te pedirá que crees una \textit{nueva} contraseña, porque la original la «olvidó» al aplicarle el Hash.
+\end{reflexion}
+
+% =========================================================
+\section{Glosario de conceptos clave}
+\begin{description}[leftmargin=!, labelwidth=3.5cm, font=\bfseries]
+  \item[Evento] Suceso observable en un sistema o red.
+  \item[Incidente] Evento que compromete o amenaza comprometer la Tríada CIA.
+  \item[Identificación] Declaración de identidad (ej. usuario).
+  \item[Autenticación] Prueba de la identidad declarada (ej. contraseña, biometría).
+  \item[Autorización] Permisos otorgados a una identidad autenticada.
+  \item[No Repudio] Imposibilidad de negar la autoría de una acción.
+  \item[Defensa en Profundidad] Estrategia de múltiples capas de seguridad superpuestas.
+  \item[Hash] Función unidireccional para verificar integridad o almacenar credenciales.
+  \item[Cifrado] Proceso bidireccional para garantizar confidencialidad.
+  \item[Hardening] Proceso de asegurar un sistema reduciendo su superficie de vulnerabilidad.
+\end{description}
+
+% =========================================================
+\section{Autoevaluación}\label{sec:autoeval}
+Respondé por escrito y sin apuntes; luego verificá tus respuestas en la Sección~\ref{sec:respuestas}.
+
+\begin{enumerate}[leftmargin=*]
+  \item Definí con tus palabras la diferencia entre \textbf{Evento} e \textbf{Incidente}, proporcionando un ejemplo original de cada uno en el contexto de una red Wi-Fi corporativa.
+  \item Describí los tres primeros pasos del Control de Acceso (Identificación, Autenticación, Autorización) utilizando la analogía de retirar dinero de un cajero automático.
+  \item ¿Por qué es considerado una mala práctica de seguridad que un sitio web te envíe tu propia contraseña en texto plano al correo cuando usás la función «Olvidé mi contraseña»?
+  \item Explicá el concepto de \textbf{Defensa en Profundidad} y mencioná al menos tres capas aplicables a una aplicación web que procesa pagos con tarjeta de crédito.
+  \item ¿Cuál es la diferencia fundamental entre un algoritmo de \textbf{Hash} y un algoritmo de \textbf{Cifrado Simétrico}?
+\end{enumerate}
+
+% =========================================================
+\section{Respuestas de la Autoevaluación}\label{sec:respuestas}
+
+\begin{clave}[Nota para el estudiante]
+Estas respuestas son \textbf{de referencia}. En los parciales y en el cuestionario A02 se valorará la claridad técnica, el uso correcto de la terminología y la capacidad de relacionar los conceptos con la Tríada CIA vista en la Clase 2.
+\end{clave}
+
+\subsection*{Pregunta 1: Evento vs. Incidente en Wi-Fi}
+\begin{respuesta}
+Un \textbf{evento} es cualquier suceso observable y registrado por el sistema, sin implicar necesariamente un daño. Un \textbf{incidente} es un evento que confirma o indica un compromiso de la seguridad (Confidencialidad, Integridad o Disponibilidad).
+
+\textbf{Ejemplo en Wi-Fi corporativa:}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Evento:} Un dispositivo con dirección MAC desconocida se asocia a la red de invitados (Guest) y solicita una IP vía DHCP. El servidor de logs registra la asignación.
+  \item \textbf{Incidente:} Ese mismo dispositivo desconocido comienza a realizar un escaneo de puertos (port scanning) hacia la subred de los servidores financieros, y el sistema de detección de intrusos (IDS) dispara una alerta de reconocimiento de red.
+\end{itemize}
+\end{respuesta}
+
+\subsection*{Pregunta 2: Control de Acceso en un Cajero Automático}
+\begin{respuesta}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Identificación:} Insertás tu tarjeta de débito en el cajero. La tarjeta le dice al sistema \textit{quién} decís que sos (tu número de cuenta/cliente).
+  \item \textbf{Autenticación:} Ingresás tu PIN de 4 dígitos en el teclado. El sistema \textit{verifica} que ese PIN coincide con el asociado a tu tarjeta (Algo que sabés + Algo que tenés).
+  \item \textbf{Autorización:} El sistema consulta al banco central y determina \textit{qué podés hacer}. Te autoriza a extraer hasta el límite diario de tu cuenta, pero te denegaría la autorización si intentaras extraer más dinero del que tenés o si la cuenta está bloqueada.
+\end{enumerate}
+\end{respuesta}
+
+\subsection*{Pregunta 3: La falla de enviar la contraseña por correo}
+\begin{respuesta}
+Es una mala práctica gravísima porque viola los principios de \textbf{Confidencialidad} y las buenas prácticas de almacenamiento de credenciales. 
+
+Si el sistema puede enviarte tu contraseña original, significa que la base de datos no la está almacenando mediante una función \textbf{Hash} unidireccional, sino en \textbf{textos plano} o con un \textbf{cifrado reversible}. Esto implica que cualquier administrador de base de datos, o un atacante que logre vulnerar el servidor, tendrá acceso directo a las contraseñas de todos los usuarios. Un sistema seguro solo almacena el Hash; al olvidarla, el sistema no puede «recordarla», por lo que el procedimiento correcto es generar un token temporal para que el usuario cree una \textit{nueva} contraseña.
+\end{respuesta}
+
+\subsection*{Pregunta 4: Defensa en Profundidad en una Web de Pagos}
+\begin{respuesta}
+La Defensa en Profundidad es la estrategia de superponer múltiples capas de seguridad para que, si una falla, las siguientes contengan la amenaza. En una web de pagos:
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Capa de Red:} Uso de Web Application Firewall (WAF) para bloquear inyecciones SQL y ataques DDoS antes de que lleguen al servidor.
+  \item \textbf{Capa de Aplicación:} Validación y sanitización estricta de todos los inputs del usuario para evitar Cross-Site Scripting (XSS).
+  \item \textbf{Capa de Datos (Tránsito):} Cifrado obligatorio mediante protocolos TLS 1.3 para que los datos de la tarjeta viajen encapsulados por la red.
+  \item \textbf{Capa de Datos (Reposo):} Tokenización de las tarjetas de crédito en la base de datos (no guardar el número real, sino un token inútil si es robado).
+\end{enumerate}
+\end{respuesta}
+
+\subsection*{Pregunta 5: Hash vs. Cifrado Simétrico}
+\begin{respuesta}
+La diferencia fundamental radica en la \textbf{reversibilidad} y el \textbf{propósito}:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Hash (Función de resumen):} Es \textbf{unidireccional}. Se usa para verificar la \textit{Integridad} de un dato o almacenar contraseñas. A partir del resultado (hash), es matemáticamente imposible (o inviable) obtener el dato original. No usa «claves» para deshacer el proceso.
+  \item \textbf{Cifrado Simétrico:} Es \textbf{bidireccional}. Se usa para garantizar la \textit{Confidencialidad}. Utiliza una misma \textbf{clave secreta} tanto para cifrar (ocultar) como para descifrar (recuperar) el dato original. Ejemplos: AES.
+\end{itemize}
+\end{respuesta}
+
+% =========================================================
+\section{Recordatorio: Actividad A02}
+\begin{clave}[Consigna A02 --- Cuestionario de Seguridad y Hacking]
+Responder el cuestionario de Seguridad y Hacking que se habilitará en el campus virtual / aula. Esta actividad evalúa la asimilación de los conceptos de la Unidad I (Clases 1, 2 y 3).
+\end{clave}
+
+\textbf{Rúbrica de evaluación (según grilla de la cátedra):}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{} l c X @{}}
+\toprule
+\textbf{Criterio} & \textbf{Peso} & \textbf{Qué se espera para el «Excelente»} \\
+\midrule
+A. Recopilación de Información & 20\% & Utiliza de manera completa fuentes confiables (apuntes, bibliografía) para fundamentar. \\
+B. Interpretación de la consigna & 20\% & Interpreta adecuadamente lo que se está preguntando en cada punto del cuestionario. \\
+C. Respuesta & 50\% & Responde adecuadamente, con precisión técnica y justificación basada en la Tríada CIA. \\
+D. Consulta & 10\% & Comprende adecuadamente la respuesta y el feedback durante la revisión en clase. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =========================================================
+\section{Fuentes y bibliografía}
+
+\subsection{Bibliografía obligatoria (según programa)}
+\begin{itemize}[leftmargin=*]
+  \item Chicano Tejada, E. (2023). \textit{Auditoría de seguridad informática. IFCT0109} (2.ª ed.). IC Editorial --- eLibro.
+  \item Elgueta, R. (s.f.). \textit{Guías de Clase unidad I}. Material inédito. UCH.
+\end{itemize}
+
+\subsection{Bibliografía complementaria (según programa)}
+\begin{itemize}[leftmargin=*]
+  \item Bancal, D. (2022). \textit{Seguridad informática} (5.ª ed.). Ediciones ENI.
+  \item Evans, L. (2019). \textit{Ethical Hacking: The Ultimate Guide to Using Penetration Testing to Audit and Improve the Cybersecurity of Computer Networks for Beginners, Including Tips on Social Engineering}. Amazon Digital Services LLC --- KDP.
+  \item White, A. \& Clark, B. (2017). \textit{BTFM: Blue Team Field Manual}. CreateSpace Independent Publishing Platform.
+  \item ISO/IEC (2005). \textit{Information security management 27001}.
+  \item NIST (National Institute of Standards and Technology). \textit{Computer Security Incident Handling Guide (SP 800-61)}.
+\end{itemize}
+
+\subsection{Portales y recursos web}
+\begin{itemize}[leftmargin=*]
+  \item Portales CERT, NIST, Hispasec y otros relacionados (bibliografía complementaria del programa).
+  \item Glosario de términos de seguridad (OWASP): \url{https://owasp.org/www-project-web-security-testing-guide/}
+\end{itemize}
+
+\end{document}

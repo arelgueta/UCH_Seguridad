@@ -1,0 +1,515 @@
+% =========================================================
+%  CUADERNILLO DE ESTUDIO - CLASE 2
+%  Seguridad Aplicada a Sistemas de Información
+%  Compilar con: pdfLaTeX (Overleaf o TeX Live/MiKTeX)
+% =========================================================
+\documentclass[11pt,a4paper]{article}
+
+% ----------------- Paquetes -----------------
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\geometry{left=2.4cm,right=2.4cm,top=2.6cm,bottom=2.6cm}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+
+% ----------------- Colores institucionales -----------------
+\definecolor{azulmat}{RGB}{0,84,140}
+\definecolor{griscaja}{RGB}{245,245,245}
+\definecolor{verdesuave}{RGB}{232,244,232}
+\definecolor{naranjasuave}{RGB}{255,244,230}
+\definecolor{azulsuave}{RGB}{232,240,250}
+\definecolor{violetasuave}{RGB}{240,232,250}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=azulmat,
+  urlcolor=azulmat,
+  citecolor=azulmat
+}
+
+% ----------------- Cajas de contenido -----------------
+\newtcolorbox{definicion}[1][Definición]{%
+  enhanced, breakable,
+  colback=azulsuave, colframe=azulmat,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{ejemplo}[1][Ejemplo]{%
+  enhanced, breakable,
+  colback=naranjasuave, colframe=orange!75!black,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{reflexion}[1][Para reflexionar]{%
+  enhanced, breakable,
+  colback=verdesuave, colframe=green!55!black,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{clave}[1][Idea clave]{%
+  enhanced, breakable,
+  colback=griscaja, colframe=black!70,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{respuesta}[1][Respuesta]{%
+  enhanced, breakable,
+  colback=violetasuave, colframe=violet!60!black,
+  fonttitle=\bfseries, title=#1
+}
+
+% ----------------- Encabezado y pie -----------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Seguridad Aplicada a Sistemas de Información}
+\fancyhead[R]{\small Cuadernillo de Estudio --- Clase 2}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ----------------- Formato de títulos -----------------
+\titleformat{\section}{\large\bfseries\color{azulmat}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{azulmat!80!black}}{\thesubsection.}{0.6em}{}
+
+% ----------------- Portada -----------------
+\title{%
+  \rule{\textwidth}{1pt}\\[0.4cm]
+  \textbf{\Large Cuadernillo de Estudio --- Clase 2}\\[0.2cm]
+  \large Seguridad vs.\ Hacking. Cultura Hacker y Ética\\[0.2cm]
+  \rule{\textwidth}{1pt}\\[0.4cm]
+  \normalsize Seguridad Aplicada a Sistemas de Información\\
+  Licenciatura en Sistemas de Información --- Facultad de Informática y Diseño\\
+  Docente: Ing.\ Rodrigo Atilio Elgueta\\[0.2cm]
+  \small Ciclo Académico Vigente
+}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\tableofcontents
+\newpage
+
+% =========================================================
+\section{Objetivos de aprendizaje}
+Al finalizar la lectura y el trabajo con este cuadernillo, el estudiante será capaz de:
+
+\begin{itemize}[leftmargin=*]
+  \item Deconstruir y definir las terminologías \textbf{seguridad} y \textbf{hacking}, separando el mito cultural de la definición técnica.
+  \item Definir \textbf{vulnerabilidades, riesgos, amenazas, activos y salvaguardas}, identificando agentes e incidencias.
+  \item Aplicar los conceptos de \textbf{Confidencialidad, Integridad y Disponibilidad} (Tríada CIA) como elementos a proteger.
+  \item Reconocer la \textbf{cultura hacker}: sus inicios históricos, técnicas y evolución.
+  \item Comprender la \textbf{ética hacker} original y desarrollar criterio ético-profesional frente a dilemas de seguridad.
+\end{itemize}
+
+\begin{clave}[Cómo usar este cuadernillo]
+Este material acompaña la Clase 2. Léelo \textbf{antes} del cursado, trae tus dudas al aula y utiliza la sección de autoevaluación (Sección~\ref{sec:autoeval}) para prepararte para el cuestionario A02 y el informe A01. Las respuestas de referencia se encuentran en la Sección~\ref{sec:respuestas}.
+\end{clave}
+
+% =========================================================
+\section{Punto de partida: la experiencia SeguridadTest}
+En la Clase 1 utilizamos el proyecto \textbf{SeguridadTest}\footnote{Disponible en \url{https://github.com/arelgueta/SeguridadTest}}: una aplicación web que, mediante un código QR, capturaba el video de los celulares de los estudiantes y lo transmitía en el proyector del aula, mostrando además recomendaciones de ciberseguridad, sitios anti-phishing y consultas de huella digital en la red.
+
+La experiencia no fue un truco de magia: fue una demostración controlada de cómo funcionan las amenazas reales.
+
+\begin{reflexion}
+\begin{itemize}[leftmargin=*]
+  \item ¿Qué sentiste al ver tu cámara o tus datos proyectados frente a toda la clase?
+  \item ¿Confiamos demasiado en las aplicaciones que instalamos y en las redes a las que nos conectamos?
+  \item ¿Qué hubiera pasado si en lugar de la cátedra, quien captura esa información fuera un delincuente?
+\end{itemize}
+\end{reflexion}
+
+De esa experiencia surgen los conceptos básicos que usaremos todo el cuatrimestre:
+
+\begin{definicion}[Activo]
+Todo elemento de hardware, software, datos o recurso humano que tiene \textbf{valor} para una organización o persona y que, por lo tanto, debe protegerse.
+\end{definicion}
+
+\begin{definicion}[Amenaza]
+Agente o evento (persona, proceso, fenómeno) con potencial de causar daño a un activo. Puede ser intencional (un atacante) o accidental (un incendio, un error humano).
+\end{definicion}
+
+\begin{definicion}[Vulnerabilidad]
+Debilidad o falla en el diseño, implementación u operación de un sistema que puede ser \textbf{explotada} por una amenaza.
+\end{definicion}
+
+\begin{definicion}[Riesgo]
+Probabilidad de que una amenaza explote una vulnerabilidad, multiplicada por el \textbf{impacto} que ese evento causaría sobre el activo.
+\end{definicion}
+
+\begin{definicion}[Salvaguarda / Contramedida]
+Control o medida (técnica, física o administrativa) que reduce la vulnerabilidad o el impacto de la amenaza.
+\end{definicion}
+
+\begin{ejemplo}[Aplicado a SeguridadTest]
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Activo:} tu celular y tus datos personales (cámara, identidad digital).
+  \item \textbf{Vulnerabilidad:} aceptar permisos o conectarse a una red sin verificar quién está del otro lado.
+  \item \textbf{Amenaza:} un atacante que replica la misma técnica con fines maliciosos (phishing, spyware).
+  \item \textbf{Riesgo:} exposición de tu privacidad y huella digital.
+  \item \textbf{Salvaguarda:} concientización, verificación de permisos, navegación segura.
+\end{itemize}
+\end{ejemplo}
+
+% =========================================================
+\section{La Seguridad de la Información y la Tríada CIA}
+La \textbf{Seguridad de la Información} es el conjunto de medidas técnicas, físicas y administrativas destinadas a proteger la información y los sistemas que la procesan, garantizando un nivel razonable de manejo de la privacidad, integridad y disponibilidad según la criticidad del sistema.
+
+Todo el diseño de la seguridad a nivel mundial se apoya en tres pilares, conocidos como la \textbf{Tríada CIA} (por sus siglas en inglés: \textit{Confidentiality, Integrity, Availability}):
+
+\begin{definicion}[Confidencialidad (C)]
+La información solo es accesible para quienes poseen \textbf{autorización}. Se protege mediante cifrado, control de accesos, autenticación y clasificación de la información.
+\end{definicion}
+
+\begin{definicion}[Integridad (I)]
+La información \textbf{no ha sido alterada} por personas o procesos no autorizados. Se protege mediante hashes, firmas digitales, control de versiones y permisos de escritura.
+\end{definicion}
+
+\begin{definicion}[Disponibilidad (A)]
+La información y los sistemas están \textbf{accesibles cuando se los necesita}. Se protege mediante redundancia, copias de seguridad (backups), UPS y planes de contingencia.
+\end{definicion}
+
+\begin{ejemplo}[Fallas de cada pilar]
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Confidencialidad:} un empleado sube una planilla de sueldos a un repositorio público de Internet.
+  \item \textbf{Integridad:} un atacante intercepta un correo y cambia el número de cuenta (CBU/CVU) de destino de un pago a proveedores.
+  \item \textbf{Disponibilidad:} un ataque de \textit{ransomware} o de denegación de servicio (DDoS) deja fuera de línea el sistema de una universidad en semana de exámenes.
+\end{itemize}
+\end{ejemplo}
+
+A estos pilares se suman propiedades complementarias que veremos a lo largo de la materia:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Autenticidad:} garantía de que la entidad es quien dice ser.
+  \item \textbf{No repudio:} nadie puede negar una acción realizada (origen y destino comprobables).
+  \item \textbf{Trazabilidad:} posibilidad de reconstruir los eventos mediante registros (logs).
+\end{itemize}
+
+\begin{clave}[Seguridad vs. Operatividad]
+La seguridad \textbf{no es un producto, es un proceso} y nunca es absoluta: se \textbf{gestiona} mediante riesgos. Además, existe una tensión permanente entre seguridad y operatividad: un sistema totalmente seguro sería inutilizable (nadie podría acceder a él), y un sistema totalmente operativo sería inseguro. El profesional de sistemas debe encontrar el punto de equilibrio según la criticidad del activo.
+\end{clave}
+
+% =========================================================
+\section{Hacking: deconstrucción del término}
+
+\subsection{Mito vs. realidad}
+El cine y la televisión construyeron la imagen del hacker como un joven encapuchado, en un sótano oscuro, tipeando frenéticamente mientras «rompe» sistemas en segundos. La realidad técnica y cultural es muy distinta.
+
+\begin{definicion}[Hacker (definición original)]
+Persona que disfruta de la \textbf{exploración intelectual} de los límites de los sistemas, con curiosidad profunda por entender cómo funcionan las cosas y por superar obstáculos de manera \textbf{creativa e ingeniosa}. El término no implica delito: implica conocimiento y creatividad.
+\end{definicion}
+
+\begin{definicion}[Hacking]
+Acción de explorar, analizar y manipular el funcionamiento de un sistema más allá de su uso convencional, con el fin de entenderlo, optimizarlo o superar sus límites. Según el contexto, la autorización y la intención, puede ser una actividad \textbf{legal y profesional} (hacking ético) o un \textbf{delito} (ciberdelincuencia).
+\end{definicion}
+
+\subsection{Breve historia de la cultura hacker}
+La cultura hacker se desarrolló por etapas, cada una con sus propios hitos:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Los orígenes (MIT):} en el \textit{Tech Model Railroad Club} del MIT nace el término \textit{hack}: una solución ingeniosa o broma técnica elaborada. Los primeros «hacks» optimizaban las vías de trenes a escala y luego migraron a las primeras computadoras del laboratorio (PDP-1).
+  \item \textbf{La época del Phreaking:} el «hacking» de la red telefónica. \textbf{John Draper}, apodado \textit{Captain Crunch}, descubre que un silbato incluido en una caja de cereales emitía un tono de \textbf{2600 Hz}, la frecuencia que los conmutadores de AT\&T usaban para señalar líneas libres. Con silbatos y luego «blue boxes» se podían realizar llamadas gratuitas. El artículo \textit{Secrets of the Little Blue Box} (Rosenbaum, revista \textit{Esquire}) popularizó el fenómeno.
+  \item \textbf{El auge de las BBS y primeras intrusiones:} surgen los \textit{Bulletin Board Systems}, los grupos hackers y las primeras intrusiones en redes como ARPANET. Bajo el seudónimo \textit{The Mentor} se publica en la revista \textit{Phrack} el \textbf{Manifiesto Hacker} (\textit{The Conscience of a Hacker}), texto fundacional de la cultura.
+  \item \textbf{Internet y profesionalización:} la masificación de Internet trae los primeros virus difundidos globalmente, nacen los equipos de respuesta a incidentes (CERT) y la seguridad comienza a profesionalizarse.
+  \item \textbf{La era actual --- Ciberdelito, hacktivismo y hacking ético:} conviven el crimen organizado (ransomware, fraudes), los grupos hacktivistas, los ataques patrocinados por Estados (APT) y, del otro lado, una industria profesional de seguridad ofensiva legal: pentesters, bug bounty y certificaciones.
+\end{itemize}
+
+% =========================================================
+\section{La ética hacker}
+El periodista Steven Levy, en su libro \textit{Hackers: Heroes of the Computer Revolution}, sistematizó los principios originales de la comunidad:
+
+\begin{enumerate}[leftmargin=*]
+  \item El acceso a las computadoras ---y a todo lo que pueda enseñarte cómo funciona el mundo--- debe ser \textbf{ilimitado y total}.
+  \item Toda la información debe ser \textbf{libre}.
+  \item Desconfía de la autoridad; promueve la \textbf{descentralización}.
+  \item Los hackers deben juzgarse por su \textbf{hacking}, no por títulos, edad, raza o posición social.
+  \item Se puede crear \textbf{arte y belleza} en una computadora.
+  \item Las computadoras pueden \textbf{cambiar tu vida para mejor}.
+\end{enumerate}
+
+\begin{reflexion}[Ética original vs. marco legal actual]
+Varios de estos principios, leídos literalmente, entran en colisión con la legislación vigente (por ejemplo, la Ley de Delitos Informáticos en Argentina, que modifica el Código Penal). ¿Sigue vigente el manifiesto hacker? La respuesta profesional es: la \textbf{curiosidad} y el \textbf{espíritu de comprender} siguen siendo el motor del buen profesional de seguridad; pero el \textbf{método} debe encuadrarse en la autorización y la ley. Esa tensión es la que separa al White Hat del Black Hat.
+\end{reflexion}
+
+Hoy, esa ética se canaliza profesionalmente mediante:
+
+\begin{definicion}[Divulgación responsable (\textit{Responsible Disclosure})]
+Práctica por la cual un investigador que descubre una vulnerabilidad la reporta \textbf{de forma privada} al responsable del sistema, otorgando un plazo razonable para el parche antes de cualquier publicación.
+\end{definicion}
+
+\begin{definicion}[Bug Bounty]
+Programas mediante los cuales organizaciones \textbf{autorizan y remuneran} a investigadores por reportar vulnerabilidades siguiendo reglas claras de alcance y conducta.
+\end{definicion}
+
+% =========================================================
+\section{Clasificación de actores: los «sombreros»}
+La comunidad adoptó la metáfora de los sombreros (\textit{hats}) del cine western para clasificar a los actores según su autorización y motivación:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\textwidth}{@{} p{2.7cm} p{2.3cm} X @{}}
+\toprule
+\textbf{Perfil} & \textbf{¿Autorización?} & \textbf{Motivación / Ejemplo típico} \\
+\midrule
+White Hat (Sombrero Blanco) & Sí & Mejorar la seguridad. Pentester contratado, auditor, investigador con contrato firmado. \\
+Black Hat (Sombrero Negro) & No & Lucro o daño. Ciberdelincuente, operadores de ransomware, robo de datos. \\
+Grey Hat (Sombrero Gris) & No, pero sin malicia & Curiosidad o reconocimiento. Entra sin permiso, avisa al dueño (a veces pide «recompensa»). \\
+Hacktivista & No & Causa política o social. Defacement de sitios, filtraciones con mensaje ideológico. \\
+Script Kiddie & No & Diversión o ego. Usa herramientas de terceros sin comprender cómo funcionan. \\
+Insider (Amenaza interna) & Tenía acceso & Venganza, lucro o negligencia. Empleado descontento que filtra información. \\
+APT & No & Espionaje o geopolítica. Grupos sofisticados, en general patrocinados por Estados. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{clave}[La línea roja es la autorización]
+Lo que separa al hacking ético del ciberdelito no es la técnica ni la herramienta: es la \textbf{autorización expresa y documentada} (contrato de pentesting, alcance definido, reglas de enfrentamiento). Sin autorización, cualquier acceso a un sistema ajeno es un delito, aun con «buenas intenciones».
+\end{clave}
+
+% =========================================================
+\section{Casos de debate trabajados en clase}
+Repasa los dilemas discutidos en el aula; pueden retomarse en cuestionarios y parciales.
+
+\subsection{Caso A: El hallazgo accidental}
+Buscando APIs públicas para un proyecto de la facultad, por un error de tipeo en una URL accedes a la base de datos de pacientes de una clínica privada: nombres, DNI y diagnósticos médicos, sin contraseña. ¿Qué hacés? ¿Descargarla para «asegurar la evidencia»? ¿Cerrar la pestaña y olvidar? ¿Contactar al responsable de sistemas? ¿Avisar a la prensa?
+
+\textbf{Ejes de análisis:} divulgación responsable, proporcionalidad, Ley de Protección de Datos Personales (Habeas Data), riesgo legal de «probar» que la base es accesible descargándola.
+
+\subsection{Caso B: Hacktivismo}
+Un grupo derriba el sitio web de una empresa acusada de contaminar un río y borra sus bases de datos de producción para frenar su operación. ¿Héroes o ciberdelincuentes? ¿Qué pilares de la Tríada CIA se violan? ¿El fin justifica los medios en el marco legal vigente?
+
+% =========================================================
+\section{Glosario de conceptos clave}
+\begin{description}[leftmargin=!, labelwidth=3.2cm, font=\bfseries]
+  \item[Activo] Elemento con valor a proteger (datos, hardware, software, personas).
+  \item[Amenaza] Agente o evento con potencial de dañar un activo.
+  \item[Vulnerabilidad] Debilidad explotable de un sistema.
+  \item[Riesgo] Probabilidad $\times$ impacto de que una amenaza explote una vulnerabilidad.
+  \item[Salvaguarda] Control que reduce el riesgo.
+  \item[Tríada CIA] Confidencialidad, Integridad y Disponibilidad.
+  \item[Hacking] Exploración creativa de los límites de un sistema.
+  \item[Hacker] Quien disfruta esa exploración; no implica delito.
+  \item[Hacking ético] Hacking \textbf{autorizado} con fines de auditoría y mejora.
+  \item[Phreaking] Hacking de redes telefónicas; origen cultural del hacking moderno.
+  \item[Phishing] Ingeniería social que suplanta identidad para robar credenciales o datos.
+  \item[Ingeniería social] Manipulación de personas para obtener información o accesos.
+  \item[Bug Bounty] Programa autorizado y remunerado de reporte de vulnerabilidades.
+\end{description}
+
+% =========================================================
+\section{Autoevaluación}\label{sec:autoeval}
+Respondé por escrito y sin apuntes; luego verificá con el cuadernillo y la bibliografía. Las respuestas de referencia están en la Sección~\ref{sec:respuestas}.
+
+\begin{enumerate}[leftmargin=*]
+  \item Definí con tus palabras la diferencia entre \textbf{amenaza} y \textbf{vulnerabilidad}, con un ejemplo propio distinto al del cuadernillo.
+  \item Enumerá los tres pilares de la Tríada CIA y presentá un caso real de falla de cada uno.
+  \item ¿Por qué el caso de \textit{Captain Crunch} y el tono de 2600 Hz es un hito de la cultura hacker?
+  \item Enunciá al menos tres principios de la ética hacker según Steven Levy.
+  \item Clasificá los siguientes escenarios (White / Black / Grey Hat, Hacktivista, Script Kiddie):
+  \begin{enumerate}
+    \item Consultora que prueba la seguridad de un banco con contrato firmado.
+    \item Usuario que roba credenciales para venderlas en foros clandestinos.
+    \item Persona que entra sin permiso a un sistema expuesto, solo para avisar al dueño.
+    \item Grupo que derriba un sitio en protesta por una ley impopular.
+    \item Aficionado que lanza un ataque copiado de un video, sin entenderlo.
+  \end{enumerate}
+  \item Verdadero o falso, justificando: «Todo hacker es un delincuente».
+  \item ¿Qué es la divulgación responsable y en qué se diferencia de extorsionar al vendor?
+  \item Explicá la relación entre \textbf{operatividad y seguridad} de un sistema.
+\end{enumerate}
+
+% =========================================================
+\section{Respuestas de la Autoevaluación}\label{sec:respuestas}
+
+\begin{clave}[Nota para el estudiante]
+Estas respuestas son \textbf{de referencia}. En el examen se valora la argumentación propia, el uso de ejemplos y la capacidad de relacionar conceptos. No se espera una respuesta literal, sino que demuestres comprensión.
+\end{clave}
+
+\subsection*{Pregunta 1: Amenaza vs. Vulnerabilidad}
+\begin{respuesta}
+La \textbf{amenaza} es el agente o evento que tiene el \textit{potencial} de causar daño (el «quién» o el «qué» ataca). La \textbf{vulnerabilidad} es la \textit{debilidad} del sistema que puede ser aprovechada por esa amenaza (el «por dónde» entra).
+
+La amenaza existe independientemente del sistema; la vulnerabilidad es una condición del sistema. Una amenaza sin vulnerabilidad no genera riesgo; una vulnerabilidad sin amenaza que la explote tampoco.
+
+\textbf{Ejemplo propio:}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Amenaza:} un rayo durante una tormenta eléctrica.
+  \item \textbf{Vulnerabilidad:} el servidor de la empresa no tiene UPS ni descarga a tierra.
+  \item \textbf{Riesgo resultante:} que el rayo dañe el servidor y se pierdan datos.
+\end{itemize}
+\end{respuesta}
+
+\subsection*{Pregunta 2: Tríada CIA con casos reales}
+\begin{respuesta}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Confidencialidad:} falla cuando información que debía ser privada se expone. \textbf{Caso real:} la filtración de datos de usuarios de una red social, donde nombres, correos y contraseñas quedaron accesibles públicamente.
+  \item \textbf{Integridad:} falla cuando la información es alterada sin autorización. \textbf{Caso real:} un atacante que modifica registros de una base de datos financiera para cambiar montos de transferencias.
+  \item \textbf{Disponibilidad:} falla cuando el sistema no está accesible cuando se lo necesita. \textbf{Caso real:} un ataque DDoS que satura los servidores de un banco en línea y deja a los clientes sin acceso a sus cuentas durante horas.
+\end{itemize}
+\end{respuesta}
+
+\subsection*{Pregunta 3: Captain Crunch y el hito del Phreaking}
+\begin{respuesta}
+El caso de \textit{Captain Crunch} (John Draper) es un hito porque demostró, por primera vez de forma pública, que era posible \textbf{entender y explotar} un sistema complejo (la red telefónica de AT\&T) utilizando una debilidad técnica no evidente: la frecuencia de señalización de 2600 Hz que los conmutadores usaban para indicar líneas libres.
+
+Su relevancia cultural radica en varios puntos:
+\begin{itemize}[leftmargin=*]
+  \item Mostró que la \textbf{curiosidad técnica} podía desafiar a grandes corporaciones.
+  \item Estableció el patrón del hacking como \textbf{exploración creativa} de límites, no solo como delito.
+  \item Inspiró a generaciones posteriores (incluidos los fundadores de Apple, que vendieron blue boxes en sus inicios).
+  \item Marcó el nacimiento del \textbf{phreaking} como primera subcultura hacker.
+\end{itemize}
+\end{respuesta}
+
+\subsection*{Pregunta 4: Principios de la ética hacker (Steven Levy)}
+\begin{respuesta}
+Tres principios posibles (el enunciado pide al menos tres de los seis):
+
+\begin{enumerate}[leftmargin=*]
+  \item El acceso a las computadoras debe ser \textbf{ilimitado y total}.
+  \item Toda la información debe ser \textbf{libre}.
+  \item Se debe \textbf{desconfiar de la autoridad} y promover la descentralización.
+  \item Los hackers deben juzgarse por su \textbf{hacking}, no por títulos o posición social.
+  \item Se puede crear \textbf{arte y belleza} en una computadora.
+  \item Las computadoras pueden \textbf{cambiar tu vida para mejor}.
+\end{enumerate}
+
+\textit{Nota:} en el examen, enunciar tres con sus palabras clave es suficiente. Si podés desarrollarlos con una frase explicativa cada uno, mejor.
+\end{respuesta}
+
+\subsection*{Pregunta 5: Clasificación de escenarios}
+\begin{respuesta}
+\begin{enumerate}[leftmargin=*]
+  \item Consultora con contrato firmado → \textbf{White Hat} (autorización expresa, fin legítimo de auditoría).
+  \item Usuario que roba credenciales para venderlas → \textbf{Black Hat} (sin autorización, fin lucrativo).
+  \item Persona que entra sin permiso solo para avisar → \textbf{Grey Hat} (sin autorización, pero sin malicia; motivación ética aunque el método no sea legal).
+  \item Grupo que derriba un sitio en protesta → \textbf{Hacktivista} (sin autorización, motivación política o social).
+  \item Aficionado que copia un ataque sin entenderlo → \textbf{Script Kiddie} (sin conocimiento técnico propio, usa herramientas ajenas).
+\end{enumerate}
+\end{respuesta}
+
+\subsection*{Pregunta 6: Verdadero o Falso --- «Todo hacker es un delincuente»}
+\begin{respuesta}
+\textbf{FALSO.}
+
+El término «hacker» en su origen y definición técnica se refiere a una persona que disfruta de la exploración intelectual de los límites de los sistemas. No implica actividad delictiva.
+
+Lo que determina si una actividad de hacking es delito o no es la \textbf{autorización}:
+\begin{itemize}[leftmargin=*]
+  \item Con autorización (contrato, alcance definido) → hacking ético, actividad profesional y legal (White Hat).
+  \item Sin autorización → acceso ilegal a sistemas, tipificado como delito en el Código Penal argentino (Ley de Delitos Informáticos).
+\end{itemize}
+
+Por lo tanto, la afirmación confunde la \textbf{técnica} (hacking) con el \textbf{delito} (ciberdelincuencia). Un pentester contratado por una empresa para auditar sus sistemas es un hacker, pero no un delincuente.
+\end{respuesta}
+
+\subsection*{Pregunta 7: Divulgación responsable vs. extorsión}
+\begin{respuesta}
+La \textbf{divulgación responsable} (\textit{Responsible Disclosure}) es la práctica por la cual un investigador que descubre una vulnerabilidad la reporta de forma privada al responsable del sistema, otorgando un plazo razonable para que se desarrolle el parche antes de cualquier publicación pública.
+
+La \textbf{diferencia con la extorsión} radica en la \textbf{motivación} y el \textbf{método}:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{} p{4cm} X X @{}}
+\toprule
+& \textbf{Divulgación responsable} & \textbf{Extorsión} \\
+\midrule
+Motivación & Proteger usuarios y sistemas & Beneficio propio (dinero, reconocimiento forzado) \\
+Método & Reporta en privado, colabora, espera & Amenaza con publicar si no se paga \\
+Resultado esperado & Parche, protección del sistema & Pago al atacante \\
+Marco legal & Puede ser recompensada (Bug Bounty) & Es un delito \\
+\bottomrule
+\end{tabularx}
+\end{center}
+\end{respuesta}
+
+\subsection*{Pregunta 8: Relación entre operatividad y seguridad}
+\begin{respuesta}
+Existe una \textbf{tensión permanente} (trade-off) entre seguridad y operatividad:
+
+\begin{itemize}[leftmargin=*]
+  \item A mayor seguridad, generalmente \textbf{menor comodidad} y operatividad (más autenticaciones, restricciones, controles).
+  \item A mayor operatividad y apertura, generalmente \textbf{menor seguridad} (menos barreras, más superficie de ataque).
+\end{itemize}
+
+\textbf{Extremos teóricos:}
+\begin{itemize}[leftmargin=*]
+  \item Un sistema 100\% seguro sería \textbf{inutilizable} (nadie podría acceder a él).
+  \item Un sistema 100\% operativo sería \textbf{completamente inseguro} (cualquiera podría acceder y modificar todo).
+\end{itemize}
+
+El rol del profesional de sistemas es encontrar el \textbf{punto de equilibrio} según la criticidad del activo, el nivel de riesgo aceptable y los requisitos del negocio. Esto se logra mediante el análisis de riesgos: no se protege todo por igual, sino que se priorizan los activos más críticos y se diseñan controles proporcionales.
+
+Esta relación está directamente vinculada al concepto de \textbf{riesgo residual}: siempre queda un nivel de riesgo aceptado, porque eliminar todo el riesgo haría imposible operar.
+\end{respuesta}
+
+% =========================================================
+\section{Recordatorio: Actividad A01}
+\begin{clave}[Consigna A01 --- Hacking ¿qué es?]
+Leer la bibliografía «Hacking ético» y elaborar un informe respecto a la \textbf{cultura hacker}: sus inicios, técnicas y ética. El informe se sube a la carpeta del Trabajo Integrador en Google Drive creada en la Clase 1, otorgando permisos de comentario a \texttt{era.profe@gmail.com}.
+\end{clave}
+
+\textbf{Rúbrica de evaluación (según grilla de la cátedra):}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{} l c X @{}}
+\toprule
+\textbf{Criterio} & \textbf{Peso} & \textbf{Qué se espera para el «Excelente»} \\
+\midrule
+A. Recopilación de información & 30\% & Utiliza de manera completa fuentes confiables y las cita correctamente. \\
+B. Elaboración de documentos & 30\% & Cumple adecuadamente con los formatos de la planilla de estandarización brindada por la cátedra. \\
+C. Elaboración de presentaciones & 10\% & Argumenta de manera sólida el caso analizado y su solución. \\
+F. Consciencia de buenas prácticas & 30\% & Evidencia permanentemente el uso de buenas prácticas. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =========================================================
+\section{Fuentes y bibliografía}
+
+\subsection{Bibliografía obligatoria (según programa)}
+\begin{itemize}[leftmargin=*]
+  \item Chicano Tejada, E. (2023). \textit{Auditoría de seguridad informática. IFCT0109} (2.ª ed.). IC Editorial --- eLibro.
+  \item Elgueta, R. (s.f.). \textit{Guías de Clase unidad I}. Material inédito. UCH.
+\end{itemize}
+
+\subsection{Bibliografía complementaria (según programa)}
+\begin{itemize}[leftmargin=*]
+  \item Bancal, D. (2022). \textit{Seguridad informática} (5.ª ed.). Ediciones ENI.
+  \item Evans, L. (2019). \textit{Ethical Hacking: The Ultimate Guide to Using Penetration Testing to Audit and Improve the Cybersecurity of Computer Networks for Beginners, Including Tips on Social Engineering}. Amazon Digital Services LLC --- KDP.
+  \item White, A. \& Clark, B. (2017). \textit{BTFM: Blue Team Field Manual}. CreateSpace Independent Publishing Platform.
+  \item ISO/IEC (2005). \textit{Information security management 27001}.
+  \item Lardent, A. R. (2001). \textit{Sistemas de información para la gestión empresaria: procedimientos, seguridad y auditoría}. Pearson Publications.
+  \item Horton, M. \& Mugge, C. (2003). \textit{Network security portable reference}. McGraw-Hill/Osborne.
+  \item Levy, S. (1984). \textit{Hackers: Heroes of the Computer Revolution}. O'Reilly.
+  \item The Mentor. (1986). \textit{The Conscience of a Hacker}. Phrack, n.º 7.
+  \item Rosenbaum, R. (1971). \textit{Secrets of the Little Blue Box}. Esquire.
+\end{itemize}
+
+\subsection{Portales y recursos web}
+\begin{itemize}[leftmargin=*]
+  \item Portales CERT, NIST, Hispasec y otros relacionados (bibliografía complementaria del programa).
+  \item Proyecto de la cátedra (Clase 1): \url{https://github.com/arelgueta/SeguridadTest}
+  \item Manifiesto Hacker original: \url{http://www.phrack.org/issues/7/3.html}
+  \item Laboratorios prácticos (se usarán más adelante en la materia): \url{https://tryhackme.com}
+  \item Electronic Frontier Foundation: \url{https://www.eff.org}
+\end{itemize}
+
+\subsection{Material audiovisual sugerido}
+\begin{itemize}[leftmargin=*]
+  \item Documental \textit{Hackers: Heroes of the Computer Revolution} (2001).
+  \item \textit{WarGames} (1983) --- análisis crítico de ficción vs. realidad.
+  \item Serie \textit{Mr. Robot} --- representación moderna del hacking en la cultura popular.
+\end{itemize}
+
+\end{document}
