@@ -1,0 +1,303 @@
+% =========================================================
+%  CUADERNILLO DE ESTUDIO - CLASE 5
+%  Seguridad Aplicada a Sistemas de Información
+%  Compilar con: pdfLaTeX (Overleaf o TeX Live/MiKTeX)
+% =========================================================
+\documentclass[11pt,a4paper]{article}
+
+% ----------------- Paquetes -----------------
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\geometry{left=2.4cm,right=2.4cm,top=2.6cm,bottom=2.6cm}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+
+% ----------------- Colores institucionales -----------------
+\definecolor{azulmat}{RGB}{0,84,140}
+\definecolor{griscaja}{RGB}{245,245,245}
+\definecolor{verdesuave}{RGB}{232,244,232}
+\definecolor{naranjasuave}{RGB}{255,244,230}
+\definecolor{azulsuave}{RGB}{232,240,250}
+\definecolor{violetasuave}{RGB}{240,232,250}
+\definecolor{rojosuave}{RGB}{255,235,235}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=azulmat,
+  urlcolor=azulmat,
+  citecolor=azulmat
+}
+
+% ----------------- Cajas de contenido -----------------
+\newtcolorbox{definicion}[1][Definición]{%
+  enhanced, breakable,
+  colback=azulsuave, colframe=azulmat,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{ejemplo}[1][Ejemplo]{%
+  enhanced, breakable,
+  colback=naranjasuave, colframe=orange!75!black,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{reflexion}[1][Para reflexionar]{%
+  enhanced, breakable,
+  colback=verdesuave, colframe=green!55!black,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{clave}[1][Idea clave]{%
+  enhanced, breakable,
+  colback=griscaja, colframe=black!70,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{respuesta}[1][Respuesta]{%
+  enhanced, breakable,
+  colback=violetasuave, colframe=violet!60!black,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{alerta}[1][Atención / Mala Práctica]{%
+  enhanced, breakable,
+  colback=rojosuave, colframe=red!70!black,
+  fonttitle=\bfseries, title=#1
+}
+
+% ----------------- Encabezado y pie -----------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Seguridad Aplicada a Sistemas de Información}
+\fancyhead[R]{\small Cuadernillo de Estudio --- Clase 5}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ----------------- Formato de títulos -----------------
+\titleformat{\section}{\large\bfseries\color{azulmat}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{azulmat!80!black}}{\thesubsection.}{0.6em}{}
+
+% ----------------- Portada -----------------
+\title{%
+  \rule{\textwidth}{1pt}\\[0.4cm]
+  \textbf{\Large Cuadernillo de Estudio --- Clase 5}\\[0.2cm]
+  \large Práctica de Análisis y Matriz de Riesgos: Revisión de Casos\\[0.2cm]
+  \rule{\textwidth}{1pt}\\[0.4cm]
+  \normalsize Seguridad Aplicada a Sistemas de Información\\
+  Licenciatura en Sistemas de Información --- Facultad de Informática y Diseño\\
+  Docente: Ing.\ Rodrigo Atilio Elgueta\\[0.2cm]
+  \small Ciclo Académico Vigente
+}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\tableofcontents
+\newpage
+
+% =========================================================
+\section{Objetivos de aprendizaje}
+Al finalizar la lectura y el trabajo con este cuadernillo, el estudiante será capaz de:
+
+\begin{itemize}[leftmargin=*]
+  \item Aplicar la metodología de \textbf{análisis post-mortem} para evaluar incidentes de seguridad reales.
+  \item Elaborar documentos de gestión de riesgos a partir de la narrativa de un caso de estudio.
+  \item Identificar y documentar \textbf{malas y buenas prácticas} en el diseño de infraestructuras y procesos.
+  \item Mapear las fallas de un caso real utilizando la \textbf{Matriz de Riesgos} y proponer salvaguardas correctivas.
+  \item Preparar la revisión y presentación del caso para la \textbf{Actividad A04}.
+\end{itemize}
+
+\begin{clave}[Cómo usar este cuadernillo]
+En la Clase 4 aprendimos la teoría y las fórmulas del riesgo. En esta Clase 5, nos ponemos el rol de \textbf{auditores y consultores}. Leeremos un caso de estudio real (anonimizado), diseccionaremos qué salió mal y prepararemos el terreno para tu entrega de la Actividad A04. Las respuestas de la autoevaluación están en la Sección~\ref{sec:respuestas}.
+\end{clave}
+
+% =========================================================
+\section{De la Teoría a la Práctica: El Análisis Post-Mortem}
+En la industria de la ciberseguridad, cuando ocurre un incidente grave, no basta con «apagar el incendio». Las organizaciones maduras realizan un \textbf{análisis post-mortem} (o lecciones aprendidas). 
+
+\begin{definicion}[Análisis Post-Mortem]
+Proceso estructurado que se realiza después de un incidente de seguridad o una falla de riesgo para determinar: qué ocurrió, por qué ocurrió, qué impacto tuvo y, lo más importante, \textbf{qué cambios sistémicos} se deben implementar para que no vuelva a suceder.
+\end{definicion}
+
+El objetivo de revisar casos de estudio en la universidad es entrenar el ojo crítico. Un profesional junior ve «un servidor hackeado». Un profesional senior ve «una falla en la segmentación de red sumada a una ausencia de autenticación multifactor en accesos de terceros».
+
+% =========================================================
+\section{Caso de Estudio: "El Eslabón más Débil" (RetailCorp)}
+\textit{Leé atentamente el siguiente caso. Está basado en hechos reales de la industria retail.}
+
+\subsection{Contexto}
+\textbf{RetailCorp} es una cadena de supermercados con presencia nacional. Tienen su casa central, un data center propio y cientos de sucursales. Para mantener los servidores de las sucursales en condiciones óptimas, tercerizan el servicio de climatización (HVAC) con la empresa \textbf{ClimaTech}. 
+
+Para que los técnicos de ClimaTech puedan monitorear las temperaturas de los servidores de forma remota, RetailCorp les otorga acceso a un \textbf{portal web de proveedores}. Desde este portal, los técnicos pueden ver alertas de temperatura y reiniciar las unidades de aire acondicionado.
+
+\subsection{El Incidente}
+Un empleado de ClimaTech recibe un correo de \textit{phishing} muy convincente y entrega sus credenciales de acceso al portal de proveedores. Los atacantes (un grupo de ciberdelito organizado) ingresan al portal. 
+
+Una vez dentro, descubren que el portal de proveedores no está aislado. Encuentran una ruta de red que les permite «saltar» desde el servidor de climatización hacia la red corporativa interna. Desde allí, despliegan un malware en los \textbf{servidores de Point of Sale (POS)} (las cajas registradoras), logrando interceptar y robar los datos de millones de tarjetas de crédito de los clientes durante varias semanas.
+
+\subsection{Las Alertas Ignoradas}
+Lo más grave del caso es que RetailCorp \textbf{tenía} un sistema de detección de intrusos (IDS) de última generación. El IDS detectó el tráfico anómalo y generó alertas de «Malware conocido instalándose en red POS». Sin embargo, el Centro de Operaciones de Seguridad (SOC) de RetailCorp estaba subcontratado y sufría de \textbf{fatiga de alertas} (recibían miles de falsos positivos diarios). Los analistas asumieron que era otro falso positivo y archivaron la alerta sin investigar.
+
+% =========================================================
+\section{Guía de Revisión: Identificando Prácticas}
+Como auditores, debemos extraer los componentes de riesgo y clasificar las acciones de la organización.
+
+\subsection{Inventario de Activos Comprometidos}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Activos de Información:} Datos de tarjetas de crédito (PCI-DSS), credenciales de empleados.
+  \item \textbf{Activos de Software/Hardware:} Servidores POS, Portal de Proveedores.
+  \item \textbf{Activos Intangibles:} Reputación de la marca, confianza del cliente, multas regulatorias.
+\end{itemize}
+
+\subsection{Identificación de Malas Prácticas (Vulnerabilidades Sistémicas)}
+
+\begin{alerta}[Mala Práctica 1: Falta de Segmentación de Red]
+El portal de un proveedor externo (de bajo nivel de confianza) tenía conectividad directa o rutas habilitadas hacia la red crítica de cobros (POS). \textbf{Regla de oro:} Los terceros solo deben acceder estrictamente a los recursos que necesitan para su función (Principio de Mínimo Privilegio).
+\end{alerta}
+
+\begin{alerta}[Mala Práctica 2: Ausencia de MFA y Gestión de Terceros]
+El acceso al portal de proveedores dependía únicamente de una contraseña (algo que el usuario sabe). No había Autenticación Multifactor (MFA). Además, RetailCorp no auditaba las prácticas de seguridad de sus proveedores (Riesgo de Cadena de Suministro).
+\end{alerta}
+
+\begin{alerta}[Mala Práctica 3: Fatiga de Alertas y Procesos del SOC]
+Tener un IDS caro no sirve de nada si el proceso administrativo (la revisión humana) falla. Ignorar alertas críticas por exceso de ruido es una falla de \textbf{gestión de riesgos operativos}.
+\end{alerta}
+
+\subsection{Propuesta de Buenas Prácticas (Salvaguardas)}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Técnica (Mitigación):} Implementar VLANs y Firewalls internos (microsegmentación) para que la red HVAC no pueda enrutar tráfico hacia la red POS.
+  \item \textbf{Técnica (Mitigación):} Exigir MFA (token o app) para todos los accesos externos, especialmente para terceros.
+  \item \textbf{Administrativa (Mitigación):} Ajustar las reglas del IDS para reducir falsos positivos y establecer un SLA (Acuerdo de Nivel de Servicio) que obligue al SOC a investigar alertas críticas en menos de 15 minutos.
+  \item \textbf{Administrativa (Transferencia/Control):} Obligar a los proveedores a firmar cláusulas de ciberseguridad y realizar auditorías anuales a sus sistemas.
+\end{itemize}
+
+% =========================================================
+\section{Glosario de conceptos clave aplicados al caso}
+\begin{description}[leftmargin=!, labelwidth=3.5cm, font=\bfseries]
+  \item[Riesgo de Terceros (Supply Chain)] Vulnerabilidades introducidas en la organización a través de proveedores, socios o software de terceros.
+  \item[Segmentación de Red] Práctica de dividir la red en zonas de seguridad para limitar el movimiento lateral de un atacante.
+  \item[Fatiga de Alertas] Fenómeno donde los analistas de seguridad ignoran alertas legítimas debido al alto volumen de falsos positivos generados por herramientas mal configuradas.
+  \item[Movimiento Lateral] Técnicas que usa un atacante para moverse a través de la red buscando activos críticos después de haber comprometido un punto de entrada inicial.
+  \item[Post-Mortem] Reunión y documento de análisis tras un incidente para extraer lecciones aprendidas.
+\end{description}
+
+% =========================================================
+\section{Autoevaluación}\label{sec:autoeval}
+Respondé por escrito. Este ejercicio es la base para la discusión en el aula y para tu informe A04.
+
+\begin{enumerate}[leftmargin=*]
+  \item En el caso RetailCorp, ¿por qué se dice que el riesgo no fue solo «técnico» sino también «administrativo»? Mencioná al menos dos fallas administrativas.
+  \item Si fueras el Gerente de IT de RetailCorp y tuvieras que justificar el presupuesto para implementar \textbf{Segmentación de Red} ante el Directorio, ¿cómo usarías los conceptos de \textbf{Impacto} y \textbf{Probabilidad} para defender tu inversión?
+  \item ¿Qué es la \textbf{Fatiga de Alertas} y cómo afecta a la salvaguarda técnica (el IDS)? ¿De qué tipo es la salvaguarda necesaria para corregir este problema?
+  \item Aplicando la \textbf{Matriz de Riesgos}, ¿en qué cuadrante (Nivel) ubicarías el riesgo de "Robo de datos de tarjetas por acceso de terceros sin MFA" \textit{antes} del incidente? ¿Por qué?
+\end{enumerate}
+
+% =========================================================
+\section{Respuestas de la Autoevaluación}\label{sec:respuestas}
+
+\begin{clave}[Nota para el estudiante]
+Utilizá estas respuestas para contrastar tu análisis. En la revisión de casos en clase, se valorará tu capacidad de argumentar y debatir estas posturas.
+\end{clave}
+
+\subsection*{Pregunta 1: Fallas Administrativas en el caso}
+\begin{respuesta}
+El riesgo no fue solo técnico porque las tecnologías de seguridad (como el IDS) estaban presentes, pero fallaron los \textbf{procesos humanos y de gestión}. 
+Dos fallas administrativas claras son:
+\begin{enumerate}
+  \item \textbf{Gestión de Terceros / Contratos:} No haber exigido a ClimaTech estándares de seguridad (como MFA o capacitación anti-phishing) ni auditar sus accesos.
+  \item \textbf{Gestión del SOC y Procedimientos:} La falta de un protocolo estricto de respuesta a incidentes que obligara a investigar las alertas críticas del IDS, permitiendo que la "fatiga de alertas" dictara la seguridad de la empresa.
+\end{enumerate}
+\end{respuesta}
+
+\subsection*{Pregunta 2: Justificación de Presupuesto (Impacto vs. Probabilidad)}
+\begin{respuesta}
+Para defender la inversión ante el Directorio, el argumento basado en riesgos es:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Probabilidad:} «Es \textit{casi seguro} (Probabilidad 5) que algún proveedor sufra un compromiso en sus credenciales en los próximos años, ya que el phishing es la vía de ataque más común y está fuera de nuestro control directo.»
+  \item \textbf{Impacto:} «Si eso ocurre y tienen acceso a nuestra red POS, el impacto es \textit{catastrófico} (Impacto 5): multas millonarias por la ley de protección de datos, demandas colectivas y daño reputacional irreversible.»
+  \item \textbf{Conclusión (Riesgo Crítico):} «Al implementar Segmentación de Red, no reducimos la probabilidad de que hackeen al proveedor, pero \textbf{reducimos el Impacto a 'Insignificante'}, ya que el atacante quedará atrapado en la red de climatización sin poder tocar las cajas registradoras. La inversión en segmentación es una fracción del costo de un solo día de operación detenida.»
+\end{itemize}
+\end{respuesta}
+
+\subsection*{Pregunta 3: Fatiga de Alertas y tipo de salvaguarda}
+\begin{respuesta}
+La \textbf{Fatiga de Alertas} ocurre cuando los analistas de seguridad se ven abrumados por un volumen masivo de alertas (muchas de ellas falsos positivos), lo que los lleva a ignorar o archivar alertas legítimas por agotamiento cognitivo. 
+Esto \textbf{anula la efectividad de la salvaguarda técnica} (el IDS), porque de nada sirve que el sistema detecte el malware si el humano no actúa.
+Para corregir esto, la salvaguarda necesaria es de tipo \textbf{Administrativa}: rediseñar el proceso de "Tuning" (ajuste) del IDS para eliminar falsos positivos, y establecer un SLA (procedimiento obligatorio) que exija la investigación formal de cualquier alerta clasificada como "Crítica".
+\end{respuesta}
+
+\subsection*{Pregunta 4: Ubicación en la Matriz de Riesgos}
+\begin{respuesta}
+\textbf{Antes del incidente}, si se hubiera hecho un análisis de riesgos honesto, este riesgo debió ubicarse en el cuadrante \textbf{CRÍTICO (Rojo)}.
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Probabilidad: Alta (4) o Casi Segura (5).} Los accesos de terceros por web son vectores de ataque conocidos y el phishing es cotidiano.
+  \item \textbf{Impacto: Catastrófico (5).} Se trata de datos financieros de clientes (tarjetas de crédito), lo que conlleva el cese de operaciones, multas legales y pérdida de confianza.
+\end{itemize}
+Un riesgo $5 \times 5 = 25$ exige un tratamiento inmediato (mitigación obligatoria) y escalamiento a la alta dirección. El hecho de que no se haya mitigado demuestra una falla grave en la \textbf{Gobernanza de TI} de la empresa.
+\end{respuesta}
+
+% =========================================================
+\section{Recordatorio: Actividad A04}
+\begin{clave}[Consigna A04 --- Administración de Riesgos: Revisión de Caso]
+Revisión y Presentación del caso visto en clase (RetailCorp o el que se discuta en el aula). 
+Deberás elaborar un informe formal de "Post-Mortem" que incluya:
+\begin{enumerate}
+  \item Resumen ejecutivo del incidente.
+  \item Matriz de Riesgos (identificando al menos 3 riesgos críticos que permitieron el incidente).
+  \item Listado de Malas Prácticas identificadas.
+  \item Plan de Acción con Buenas Prácticas y Salvaguardas propuestas.
+\end{enumerate}
+Subilo a la carpeta del Trabajo Integrador en Google Drive, otorgando permisos de comentario a \texttt{era.profe@gmail.com}.
+\end{clave}
+
+\textbf{Rúbrica de evaluación (según grilla de la cátedra):}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{} l c X @{}}
+\toprule
+\textbf{Criterio} & \textbf{Peso} & \textbf{Qué se espera para el «Excelente» (4)} \\
+\midrule
+A. Recopilación de información & 30\% & Utiliza de manera completa fuentes confiables (estándares, marcos de trabajo) y las cita correctamente para justificar las fallas. \\
+B. Elaboración de documentos & 30\% & Cumple adecuadamente con los formatos atento a la planilla de estandarización brindada por la cátedra. \\
+C. Elaboración de presentaciones & 10\% & Argumenta de manera sólida el inconveniente del caso y su solución (defiende el post-mortem). \\
+F. Consciencia de buenas prácticas & 30\% & Evidencia permanentemente el uso de buenas prácticas en el diseño de las salvaguardas propuestas. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =========================================================
+\section{Fuentes y bibliografía}
+
+\subsection{Bibliografía obligatoria (según programa)}
+\begin{itemize}[leftmargin=*]
+  \item Chicano Tejada, E. (2023). \textit{Auditoría de seguridad informática. IFCT0109} (2.ª ed.). IC Editorial --- eLibro.
+  \item Elgueta, R. (s.f.). \textit{Guías de Clase unidad II}. Material inédito. UCH.
+\end{itemize}
+
+\subsection{Bibliografía complementaria y Marcos de Trabajo}
+\begin{itemize}[leftmargin=*]
+  \item Bancal, D. (2022). \textit{Seguridad informática} (5.ª ed.). Ediciones ENI.
+  \item ISO/IEC (2018). \textit{ISO/IEC 27005: Information security risk management}.
+  \item NIST (2012). \textit{Guide for Conducting Risk Assessments (SP 800-30 Rev. 1)}.
+  \item PCI Security Standards Council (2022). \textit{Payment Card Industry Data Security Standard (PCI DSS) v4.0}. (Fundamental para entender los requisitos de redes POS).
+  \item Mitre Corporation. \textit{MITRE ATT\&CK Framework}. (Para mapear técnicas de movimiento lateral).
+\end{itemize}
+
+\subsection{Portales y recursos web}
+\begin{itemize}[leftmargin=*]
+  \item Portales CERT, NIST, Hispasec.
+  \item Plantilla de Matriz de Riesgos de la cátedra (Clase 4).
+  \item Reportes de investigaciones de filtraciones de datos (DBIR) de Verizon.
+\end{itemize}
+
+\end{document}

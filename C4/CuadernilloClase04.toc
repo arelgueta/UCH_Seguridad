@@ -1,0 +1,19 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {section}{\numberline {1}Objetivos de aprendizaje}{2}{section.1}%
+\contentsline {section}{\numberline {2}Introducción a la Gestión de Riesgos}{2}{section.2}%
+\contentsline {section}{\numberline {3}Conceptos Fundamentales}{2}{section.3}%
+\contentsline {section}{\numberline {4}El Proceso de Análisis de Riesgos}{4}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Análisis Cualitativo}{4}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Análisis Cuantitativo}{4}{subsection.4.2}%
+\contentsline {section}{\numberline {5}Diseño de Salvaguardas}{5}{section.5}%
+\contentsline {section}{\numberline {6}Riesgo Residual}{5}{section.6}%
+\contentsline {section}{\numberline {7}La Matriz de Riesgos}{6}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Estructura típica (enfoque cualitativo)}{6}{subsection.7.1}%
+\contentsline {section}{\numberline {8}Glosario de conceptos clave}{6}{section.8}%
+\contentsline {section}{\numberline {9}Autoevaluación}{7}{section.9}%
+\contentsline {section}{\numberline {10}Respuestas de la Autoevaluación}{7}{section.10}%
+\contentsline {section}{\numberline {11}Recordatorio: Actividad A03}{9}{section.11}%
+\contentsline {section}{\numberline {12}Fuentes y bibliografía}{10}{section.12}%
+\contentsline {subsection}{\numberline {12.1}Bibliografía obligatoria (según programa)}{10}{subsection.12.1}%
+\contentsline {subsection}{\numberline {12.2}Bibliografía complementaria (según programa)}{10}{subsection.12.2}%
+\contentsline {subsection}{\numberline {12.3}Portales y recursos web}{10}{subsection.12.3}%
