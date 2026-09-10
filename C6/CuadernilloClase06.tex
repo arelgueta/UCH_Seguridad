@@ -1,0 +1,363 @@
+% =========================================================
+%  CUADERNILLO DE ESTUDIO - CLASE 6
+%  Seguridad Aplicada a Sistemas de Información
+%  Compilar con: pdfLaTeX (Overleaf o TeX Live/MiKTeX)
+% =========================================================
+\documentclass[11pt,a4paper]{article}
+
+% ----------------- Paquetes -----------------
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\geometry{left=2.4cm,right=2.4cm,top=2.6cm,bottom=2.6cm}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+
+% ----------------- Colores institucionales -----------------
+\definecolor{azulmat}{RGB}{0,84,140}
+\definecolor{griscaja}{RGB}{245,245,245}
+\definecolor{verdesuave}{RGB}{232,244,232}
+\definecolor{naranjasuave}{RGB}{255,244,230}
+\definecolor{azulsuave}{RGB}{232,240,250}
+\definecolor{violetasuave}{RGB}{240,232,250}
+\definecolor{rojosuave}{RGB}{255,235,235}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=azulmat,
+  urlcolor=azulmat,
+  citecolor=azulmat
+}
+
+% ----------------- Cajas de contenido -----------------
+\newtcolorbox{definicion}[1][Definición]{%
+  enhanced, breakable,
+  colback=azulsuave, colframe=azulmat,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{ejemplo}[1][Ejemplo]{%
+  enhanced, breakable,
+  colback=naranjasuave, colframe=orange!75!black,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{reflexion}[1][Para reflexionar]{%
+  enhanced, breakable,
+  colback=verdesuave, colframe=green!55!black,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{clave}[1][Idea clave]{%
+  enhanced, breakable,
+  colback=griscaja, colframe=black!70,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{respuesta}[1][Respuesta]{%
+  enhanced, breakable,
+  colback=violetasuave, colframe=violet!60!black,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{alerta}[1][Límite Ético / Legal]{%
+  enhanced, breakable,
+  colback=rojosuave, colframe=red!70!black,
+  fonttitle=\bfseries, title=#1
+}
+
+% ----------------- Encabezado y pie -----------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Seguridad Aplicada a Sistemas de Información}
+\fancyhead[R]{\small Cuadernillo de Estudio --- Clase 6}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ----------------- Formato de títulos -----------------
+\titleformat{\section}{\large\bfseries\color{azulmat}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{azulmat!80!black}}{\thesubsection.}{0.6em}{}
+
+% ----------------- Portada -----------------
+\title{%
+  \rule{\textwidth}{1pt}\\[0.4cm]
+  \textbf{\Large Cuadernillo de Estudio --- Clase 6}\\[0.2cm]
+  \large Seguridad Física: Perímetros, Controles y el Factor Humano\\[0.2cm]
+  \rule{\textwidth}{1pt}\\[0.4cm]
+  \normalsize Seguridad Aplicada a Sistemas de Información\\
+  Licenciatura en Sistemas de Información --- Facultad de Informática y Diseño\\
+  Docente: Ing.\ Rodrigo Atilio Elgueta\\[0.2cm]
+  \small Ciclo Académico Vigente
+}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\tableofcontents
+\newpage
+
+% =========================================================
+\section{Objetivos de aprendizaje}
+Al finalizar la lectura y el trabajo con este cuadernillo, el estudiante será capaz de:
+
+\begin{itemize}[leftmargin=*]
+  \item Comprender la \textbf{seguridad física} como la capa fundamental (Capa 0) de la Defensa en Profundidad.
+  \item Diseñar modelos de \textbf{perímetros concéntricos} (modelo de cebolla) para la protección de activos críticos (Data Centers, salas de servidores).
+  \item Analizar controles de acceso físicos, suministros de energía (UPS), climatización (HVAC) y protección contra incendios.
+  \item Identificar técnicas de \textbf{Ingeniería Social} aplicadas a la irrupción de espacios físicos.
+  \item Ejecutar la \textbf{Actividad A05} con estricto apego al marco ético y legal vigente.
+\end{itemize}
+
+\begin{clave}[Cómo usar este cuadernillo]
+En clases anteriores vimos firewalls y cifrado. Pero existe una máxima en la industria de la ciberseguridad: \textit{«Si un atacante tiene acceso físico a tu servidor, deja de ser tu servidor»}. Este cuadernillo te preparará para entender cómo proteger el hardware y cómo los atacantes usan la psicología humana para saltarse millones de dólares en seguridad lógica. Las respuestas de la autoevaluación están en la Sección~\ref{sec:respuestas}.
+\end{clave}
+
+% =========================================================
+\section{La Seguridad Física: La base olvidada}
+La seguridad lógica (firewalls, antivirus, contraseñas) es inútil si un atacante puede entrar a la oficina, desconectar el servidor o robar el disco rígido. La seguridad física es el conjunto de medidas destinadas a proteger las instalaciones, el equipamiento y al personal contra amenazas físicas.
+
+\begin{definicion}[Seguridad Física]
+Conjunto de barreras, controles y procedimientos diseñados para prevenir el acceso no autorizado a instalaciones, proteger el equipamiento de daños (accidentales o intencionales) y garantizar la continuidad operativa del entorno físico.
+\end{definicion}
+
+\subsection{Amenazas a la seguridad física}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Naturales:} Inundaciones, terremotos, tormentas eléctricas, temperaturas extremas.
+  \item \textbf{Accidentales:} Cortes de energía, incendios, fugas de agua, fallas en equipos de climatización.
+  \item \textbf{Intencionales:} Robo de equipamiento, sabotaje, vandalismo, espionaje industrial, terrorismo.
+\end{itemize}
+
+% =========================================================
+\section{El Modelo de Cebolla: Perímetros Concéntricos}
+La seguridad física se diseña en \textbf{capas superpuestas}, como una cebolla. Un atacante debe superar cada anillo para llegar al activo crítico (el servidor o el dato).
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Anillo 1 --- Aproximación (La calle):} Iluminación perimetral, cámaras CCTV, cercos, rejas, barreras vehiculares, guardias de seguridad en la entrada.
+  \item \textbf{Anillo 2 --- Terreno (El predio):} Control de acceso vehicular, patrullaje, detección de intrusos en ventanas.
+  \item \textbf{Anillo 3 --- Edificio (La recepción):} Molinetes, mostrador de recepción, registro de visitas, entrega de credenciales temporarias.
+  \item \textbf{Anillo 4 --- Piso / Sector:} Puertas con acceso biométrico o por tarjeta RFID, exclusión de visitantes no autorizados.
+  \item \textbf{Anillo 5 --- Sala de Servidores / Data Center:} Puertas blindadas, control biométrico de doble factor, trampas (mantraps).
+  \item \textbf{Anillo 6 --- Rack / Gabinete:} Cerraduras físicas en los racks, sensores de apertura de puertas.
+  \item \textbf{Anillo 7 --- Activo:} Cifrado de disco, candados Kensington, sellos antimanipulación en los puertos USB.
+\end{enumerate}
+
+% =========================================================
+\section{Controles Ambientales e Infraestructura Crítica}
+Un Data Center no es solo un cuarto con computadoras. Requiere ingeniería especializada para garantizar la \textbf{Disponibilidad} (letra A de la Tríada CIA).
+
+\subsection{Suministro de Energía}
+Un corte de energía puede corromper bases de datos y dañar hardware. La cadena de protección típica es:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Red eléctrica pública:} La fuente primaria, sujeta a cortes.
+  \item \textbf{UPS (Uninterruptible Power Supply):} Baterías que absorben microcortes y dan autonomía (minutos a horas) para un apagado controlado o el arranque de generadores.
+  \item \textbf{Generadores diésel:} Entran en funcionamiento tras unos segundos para sostener la operación por días.
+\end{itemize}
+
+\subsection{Climatización (HVAC)}
+Los servidores generan un calor inmenso. Si la temperatura sube, los equipos se apagan por protección térmica o sufren daños permanentes.
+\begin{itemize}[leftmargin=*]
+  \item Control estricto de temperatura (generalmente entre 18°C y 22°C).
+  \item Control de humedad: el aire muy seco genera \textbf{electricidad estática} (que quema componentes); el aire muy húmedo genera condensación y cortocircuitos.
+  \item Pisos técnicos elevados para distribución de aire frío y pasillos fríos/calientes.
+\end{itemize}
+
+\subsection{Protección contra Incendios}
+\begin{alerta}[¡El agua destruye los servidores!]
+En salas críticas, \textbf{no se usan rociadores de agua} (sprinklers), ya que apagar el fuego significaría destruir todo el hardware.
+\end{alerta}
+Se utilizan sistemas de \textbf{extinción por gases limpios} (como FM-200 o Novec 1230), que desplazan el oxígeno o absorben el calor para apagar el fuego en segundos, \textbf{sin dañar los equipos electrónicos} y sin ser tóxicos para las personas.
+
+\subsection{Cableado Estructurado}
+El cableado debe estar prolijamente identificado, en bandejas separadas del cableado eléctrico (para evitar interferencias electromagnéticas) y con etiquetas en ambos extremos. El desorden físico es un riesgo de seguridad y de disponibilidad.
+
+% =========================================================
+\section{El Eslabón más Débil: Ingeniería Social Física}
+La ingeniería social es el arte de manipular a las personas para que revelen información confidencial o realicen acciones que comprometen la seguridad. En el ámbito físico, se aprovecha de la confianza, la cortesía y la distracción.
+
+\subsection{Técnicas comunes de irrupción física}
+\begin{definicion}[Tailgating (Pisar los talones)]
+El atacante sigue de cerca a un empleado autorizado que abre una puerta con su tarjeta, colándose antes de que la puerta se cierre.
+\end{definicion}
+
+\begin{definicion}[Piggybacking (Llevar a cuestas)]
+Similar al tailgating, pero con \textbf{consentimiento} de la víctima. El atacante pide por favor que le sostengan la puerta porque «olvidó su credencial» o trae las manos ocupadas con cajas.
+\end{definicion}
+
+\begin{definicion}[Dumpster Diving (Buceo en la basura)]
+Revisar los desechos de la empresa en busca de información valiosa: documentos impresos sin triturar, notas adhesivas con contraseñas, discos duros desechados sin borrar, organigramas.
+\end{definicion}
+
+\begin{definicion}[Shoulder Surfing (Mirar por encima del hombro)]
+Observar la pantalla de un empleado o el teclado mientras ingresa su contraseña en un lugar público o en la oficina.
+\end{definicion}
+
+\begin{definicion}[Suplantación de Identidad (Pretexting)]
+El atacante se disfraza de técnico de internet, personal de mantenimiento, bombero o inspector de seguridad e higiene para ganar acceso irrestricto a las instalaciones.
+\end{definicion}
+
+\begin{reflexion}[La cortesía como vulnerabilidad]
+Los seres humanos estamos programados socialmente para ser amables y ayudar. Un atacante que lleva una caja pesada y pide que le abran la puerta de un área restringida explotará tu instinto de cortesía. En seguridad física, la cortesía mal entendida es una vulnerabilidad crítica.
+\end{reflexion}
+
+% =========================================================
+\section{Glosario de conceptos clave}
+\begin{description}[leftmargin=!, labelwidth=3.5cm, font=\bfseries]
+  \item[Perímetro] Límite físico o lógico que separa una zona segura de una no segura.
+  \item[Mantrap] Esclusa de seguridad: una cabina pequeña con dos puertas. La segunda no se abre hasta que la primera se cierra y se valida la identidad.
+  \item[HVAC] \textit{Heating, Ventilation, and Air Conditioning}. Sistema de climatización crítico para Data Centers.
+  \item[UPS] Sistema de alimentación ininterrumpida.
+  \item[Tailgating] Ingreso no autorizado aprovechando la apertura de puerta de un tercero.
+  \item[Piggybacking] Ingreso con complicidad (voluntaria o engañada) de un tercero.
+  \item[Dumpster Diving] Búsqueda de información sensible en la basura.
+  \item[Biometría] Autenticación basada en rasgos físicos (huella, iris, rostro, vena).
+  \item[CCTV] Circuito cerrado de televisión para videovigilancia.
+\end{description}
+
+% =========================================================
+\section{Autoevaluación}\label{sec:autoeval}
+Respondé por escrito; luego verificá en la Sección~\ref{sec:respuestas}.
+
+\begin{enumerate}[leftmargin=*]
+  \item ¿Por qué se afirma que «si un atacante tiene acceso físico ilimitado a un servidor, la seguridad lógica es irrelevante»? Mencioná al menos dos ataques físicos posibles.
+  \item Describí el concepto de \textbf{modelo de cebolla} aplicado a la seguridad de un Data Center y mencioná al menos 3 anillos de protección.
+  \item ¿Por qué en un Data Center no se utilizan rociadores de agua (sprinklers) tradicionales para apagar incendios? ¿Qué alternativa se usa y por qué?
+  \item Diferenciá \textbf{Tailgating} de \textbf{Piggybacking}. ¿Cuál de los dos es más difícil de mitigar con tecnología y por qué?
+  \item ¿Qué es el \textbf{Dumpster Diving} y qué política administrativa es fundamental para mitigarlo en una oficina?
+\end{enumerate}
+
+% =========================================================
+\section{Respuestas de la Autoevaluación}\label{sec:respuestas}
+
+\begin{clave}[Nota para el estudiante]
+Utilizá estas respuestas para autoevaluarte. Son de referencia; en clase y en las actividades se valorará tu capacidad de argumentar y dar ejemplos propios.
+\end{clave}
+
+\subsection*{Pregunta 1: Acceso físico vs. Seguridad lógica}
+\begin{respuesta}
+Porque con acceso físico ilimitado, un atacante puede eludir las defensas lógicas actuando directamente sobre el hardware o el medio ambiente. Ejemplos de ataques físicos:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Robo del disco rígido:} Puede extraerlo e intentar romper el cifrado en un laboratorio offline, o usar técnicas de cold-boot attack sobre la memoria RAM.
+  \item \textbf{Arranque desde medios externos:} Conectar un USB booteable con un sistema operativo Live (como Kali Linux) para bypasear el sistema operativo instalado y acceder a los datos en disco.
+  \item \textbf{Keylogger físico:} Conectar un pequeño dispositivo entre el teclado y la PC para capturar todas las contraseñas.
+  \item \textbf{Destrucción o sabotaje:} Simplemente desconectar los cables de red, cortar la energía o destruir el equipo.
+\end{itemize}
+\end{respuesta}
+
+\subsection*{Pregunta 2: Modelo de cebolla (perímetros)}
+\begin{respuesta}
+El \textbf{modelo de cebolla} es una estrategia de defensa en profundidad donde la seguridad se implementa en anillos concéntricos. Cada anillo es una barrera que obliga al atacante a superar un control adicional.
+Tres anillos posibles (de afuera hacia adentro):
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Anillo del predio:} Cercos perimetrales, iluminación, CCTV, guardias en la entrada principal.
+  \item \textbf{Anillo del edificio:} Recepción con control de visitantes, molinetes con tarjeta RFID, exclusión de accesos no autorizados.
+  \item \textbf{Anillo de la sala de servidores:} Puerta blindada, acceso biométrico (huella o iris), esclusa de seguridad (mantrap) para evitar el tailgating.
+\end{enumerate}
+\end{respuesta}
+
+\subsection*{Pregunta 3: Incendios en Data Centers}
+\begin{respuesta}
+No se usan rociadores de agua porque el agua \textbf{destruiría los servidores y cortocircuitaría el hardware}, causando tanto o más daño que el fuego mismo (pérdida total de la Disponibilidad e Integridad).
+La alternativa es el uso de \textbf{sistemas de extinción por gases limpios} (ej. FM-200, Novec 1230 o Inergen). Estos gases apagan el fuego en segundos absorbiendo el calor o inhibiendo la reacción química de la combustión, \textbf{sin dejar residuos, sin ser conductores de electricidad y sin dañar los equipos electrónicos}.
+\end{respuesta}
+
+\subsection*{Pregunta 4: Tailgating vs. Piggybacking}
+\begin{respuesta}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Tailgating (Pisar los talones):} El atacante entra sin que la víctima se dé cuenta, pegado a su espalda antes de que la puerta se cierre. Es un acto \textbf{no consentido}.
+  \item \textbf{Piggybacking (Llevar a cuestas):} La víctima \textbf{consiente y coopera} (aunque engañada), por ejemplo, sosteniendo la puerta abierta al atacante porque este trae las manos ocupadas o dice haber olvidado la tarjeta.
+\end{itemize}
+El \textbf{Piggybacking} es más difícil de mitigar con tecnología, porque explota la \textbf{cortesía humana} y la empatía. Requiere concientización constante y una cultura de seguridad donde «no sostener la puerta» no sea visto como una grosería, sino como un procedimiento.
+\end{respuesta}
+
+\subsection*{Pregunta 5: Dumpster Diving y mitigación}
+\begin{respuesta}
+El \textbf{Dumpster Diving} es la técnica de revisar la basura de una organización en busca de información sensible: documentos impresos sin destruir, notas con contraseñas, organigramas, discos o pendrives desechados sin formatear.
+La política administrativa fundamental para mitigarlo es la \textbf{Política de Escritorio Limpio y de Desecho Seguro}, que obliga a:
+\begin{itemize}[leftmargin=*]
+  \item Triturar (shredding) todo documento confidencial antes de desecharlo.
+  \item Destruir físicamente o degaussar los medios magnéticos antes de tirarlos.
+  \item Disponer de contenedores cerrados con llave para material sensible, que solo sean retirados por empresas de destrucción certificada.
+\end{itemize}
+\end{respuesta}
+
+% =========================================================
+\section{Actividad A05: Desafío de Ingeniería Social}
+
+\begin{alerta}[¡Atención! Límites éticos y legales]
+La Ingeniería Social es una técnica ofensiva. Su uso sin autorización constituye un \textbf{delito} según la legislación vigente. Para esta actividad académica, \textbf{todo objetivo debe tener consentimiento} o ser un entorno simulado controlado por la cátedra. Nunca intentes estas técnicas sobre personas o instituciones no autorizadas.
+\end{alerta}
+
+\begin{clave}[Consigna A05 --- Seguridad Física e Ingeniería Social]
+\textbf{Objetivo:} Comprender en la práctica cómo el factor humano es el eslabón más débil de la seguridad física.
+
+\textbf{Tarea:} Realizar un ejercicio controlado de Ingeniería Social con el fin de «obtener información confidencial o importante» que comprometa la seguridad física de un entorno. 
+
+\textbf{Opciones de ejercicio (elegir una):}
+\begin{enumerate}
+  \item \textbf{Conocido consentido:} Pedirle a un amigo o familiar (que sepa que estás haciendo la tarea) que te dé por teléfono o chat información sensible (ej. nombre de su proveedor de internet, número de cuenta, modelo de router, horarios en que no está en casa) usando pretextos creativos.
+  \item \textbf{OSINT Físico (Dumpster Diving simulado):} Analizar la huella física pública de una empresa (fotos de sus empleados en redes sociales donde se ven credenciales, monitores o fondos; horarios de ingreso por LinkedIn; direcciones de sucursales).
+  \item \textbf{Simulación de Pretexting:} Llamar a un servicio de atención al cliente (del cual seas cliente) y ver cuánta información pueden darte si simulás haber perdido tus datos, sin dar más que información básica.
+\end{enumerate}
+
+\textbf{Entregable:} Un informe donde detallas:
+\begin{itemize}
+  \item La técnica utilizada (Pretexting, OSINT, Vishing, etc.).
+  \item El escenario montado.
+  \item La información «confidencial» obtenida.
+  \item Una reflexión ética y las \textbf{salvaguardas administrativas} (capacitación, políticas) que hubieran evitado el éxito de tu ataque.
+\end{itemize}
+
+Subilo a la carpeta del Trabajo Integrador en Google Drive, otorgando permisos de comentario a \texttt{era.profe@gmail.com}.
+\end{clave}
+
+\textbf{Rúbrica de evaluación (según grilla de la cátedra):}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{} l c X @{}}
+\toprule
+\textbf{Criterio} & \textbf{Peso} & \textbf{Qué se espera para el «Excelente» (4)} \\
+\midrule
+A. Recopilación de información & 50\% & Utiliza de manera completa fuentes confiables (marcos de ingeniería social, libros de Mitnick, etc.) y las cita correctamente. \\
+B. Elaboración de documentos & 20\% & Cumple adecuadamente con los formatos atento a la planilla de estandarización brindada por la cátedra. \\
+C. Elaboración de presentaciones & 10\% & Argumenta de manera sólida el escenario, la técnica utilizada y cómo se hubiera mitigado. \\
+F. Consciencia de buenas prácticas & 20\% & Evidencia permanentemente el respeto por los límites éticos y legales en la ejecución del ejercicio. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =========================================================
+\section{Fuentes y bibliografía}
+
+\subsection{Bibliografía obligatoria (según programa)}
+\begin{itemize}[leftmargin=*]
+  \item Chicano Tejada, E. (2023). \textit{Auditoría de seguridad informática. IFCT0109} (2.ª ed.). IC Editorial --- eLibro.
+  \item Elgueta, R. (s.f.). \textit{Guías de Clase unidad III}. Material inédito. UCH.
+\end{itemize}
+
+\subsection{Bibliografía complementaria (según programa)}
+\begin{itemize}[leftmargin=*]
+  \item Bancal, D. (2022). \textit{Seguridad informática} (5.ª ed.). Ediciones ENI.
+  \item Evans, L. (2019). \textit{Ethical Hacking: The Ultimate Guide to Using Penetration Testing to Audit and Improve the Cybersecurity of Computer Networks for Beginners, Including Tips on Social Engineering}. Amazon Digital Services LLC --- KDP.
+  \item White, A. \& Clark, B. (2017). \textit{BTFM: Blue Team Field Manual}. CreateSpace Independent Publishing Platform.
+  \item Mitnick, K. \& Simon, W. (2002). \textit{The Art of Deception: Controlling the Human Element of Security}. Wiley.
+  \item Hadnagy, C. (2018). \textit{Social Engineering: The Science of Human Hacking} (2.ª ed.). Wiley.
+  \item ISO/IEC (2005). \textit{Information security management 27001} (Anexo A.9 y A.11 sobre seguridad física).
+\end{itemize}
+
+\subsection{Recursos web y normativas}
+\begin{itemize}[leftmargin=*]
+  \item Portales CERT, NIST, Hispasec.
+  \item Norma TIA-942 (estándar de infraestructura para Data Centers).
+  \item Material audiovisual: Documental \textit{The Weakest Link} (sobre Ingeniería Social).
+\end{itemize}
+
+\end{document}
