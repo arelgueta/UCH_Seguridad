@@ -1,0 +1,308 @@
+% =========================================================
+%  CUADERNILLO DE ESTUDIO - CLASE 7
+%  Seguridad Aplicada a Sistemas de Información
+%  Compilar con: pdfLaTeX (Overleaf o TeX Live/MiKTeX)
+% =========================================================
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\geometry{left=2.4cm,right=2.4cm,top=2.6cm,bottom=2.6cm}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{listings}
+\definecolor{azulmat}{RGB}{0,84,140}
+\definecolor{griscaja}{RGB}{245,245,245}
+\definecolor{verdesuave}{RGB}{232,244,232}
+\definecolor{naranjasuave}{RGB}{255,244,230}
+\definecolor{azulsuave}{RGB}{232,240,250}
+\definecolor{violetasuave}{RGB}{240,232,250}
+\definecolor{rojosuave}{RGB}{255,235,235}
+\definecolor{kaliblue}{RGB}{46,160,255}
+\hypersetup{colorlinks=true,linkcolor=azulmat,urlcolor=azulmat,citecolor=azulmat}
+\lstset{basicstyle=\ttfamily\small,backgroundcolor=\color{griscaja},frame=single,breaklines=true,keywordstyle=\color{blue}\bfseries,commentstyle=\color{green!60!black},stringstyle=\color{red},showstringspaces=false,numbers=left,numberstyle=\tiny\color{gray}}
+\newtcolorbox{definicion}[1][Definición]{enhanced, breakable, colback=azulsuave, colframe=azulmat, fonttitle=\bfseries, title=#1}
+\newtcolorbox{ejemplo}[1][Ejemplo]{enhanced, breakable, colback=naranjasuave, colframe=orange!75!black, fonttitle=\bfseries, title=#1}
+\newtcolorbox{reflexion}[1][Para reflexionar]{enhanced, breakable, colback=verdesuave, colframe=green!55!black, fonttitle=\bfseries, title=#1}
+\newtcolorbox{clave}[1][Idea clave]{enhanced, breakable, colback=griscaja, colframe=black!70, fonttitle=\bfseries, title=#1}
+\newtcolorbox{respuesta}[1][Respuesta]{enhanced, breakable, colback=violetasuave, colframe=violet!60!black, fonttitle=\bfseries, title=#1}
+\newtcolorbox{alerta}[1][Límite Ético / Legal]{enhanced, breakable, colback=rojosuave, colframe=red!70!black, fonttitle=\bfseries, title=#1}
+\newtcolorbox{herramienta}[1][Herramienta]{enhanced, breakable, colback=blue!5, colframe=kaliblue, fonttitle=\bfseries, title=#1}
+\pagestyle{fancy}\fancyhf{}\fancyhead[L]{\small Seguridad Aplicada a Sistemas de Información}\fancyhead[R]{\small Cuadernillo de Estudio --- Clase 7}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0.4pt}
+\titleformat{\section}{\large\bfseries\color{azulmat}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{azulmat!80!black}}{\thesubsection.}{0.6em}{}
+\title{\rule{\textwidth}{1pt}\\[0.4cm]\textbf{\Large Cuadernillo de Estudio --- Clase 7}\\[0.2cm]\large Seguridad Lógica: Capas, Componentes y el Arsenal de Kali Linux\\[0.2cm]\rule{\textwidth}{1pt}\\[0.4cm]\normalsize Seguridad Aplicada a Sistemas de Información\\Licenciatura en Sistemas de Información --- Facultad de Informática y Diseño\\Docente: Ing.\ Rodrigo Atilio Elgueta\\[0.2cm]\small Ciclo Académico Vigente}
+\author{}\date{}
+\begin{document}\maketitle\thispagestyle{fancy}\tableofcontents\newpage
+\section{Objetivos de aprendizaje}
+Al finalizar la lectura y el trabajo con este cuadernillo, el estudiante será capaz de:
+\begin{itemize}[leftmargin=*]
+  \item Analizar el \textbf{modelo OSI} desde la perspectiva de la seguridad, identificando vulnerabilidades y controles por capa.
+  \item Identificar y diferenciar los \textbf{componentes de seguridad lógica}: Firewalls, IDS/IPS, WAF, Proxies, Antivirus.
+  \item Comprender el diseño de \textbf{zonas de seguridad} (DMZ) y el principio de menor privilegio.
+  \item Conocer la distribución \textbf{Kali Linux} y su organización en metapaquetes.
+  \item Identificar las \textbf{herramientas clave} para cada fase del ciclo de vida del pentesting.
+  \item Preparar la \textbf{Actividad A06} investigando herramientas para comprometer la seguridad lógica.
+\end{itemize}
+\begin{clave}[Cómo usar este cuadernillo]
+Esta clase es el puente entre la teoría de la seguridad (Unidades I-III) y la práctica ofensiva del Hacking Ético (Unidad IV). Aquí conocerás las herramientas que usarás en TryHackMe. Las respuestas de la autoevaluación están en la Sección~\ref{sec:respuestas}.
+\end{clave}
+\section{Seguridad Lógica: El Modelo OSI como mapa de defensa}
+La seguridad lógica protege los activos de información mediante controles implementados en el software, el hardware y las comunicaciones. Para diseñarla correctamente, usamos el \textbf{modelo OSI} como mapa: cada capa tiene sus propias vulnerabilidades y sus propios controles.
+\begin{center}\renewcommand{\arraystretch}{1.4}\begin{tabularx}{\textwidth}{@{} p{1.5cm} p{2.5cm} X X @{} }
+\toprule\textbf{Capa} & \textbf{Nombre} & \textbf{Vulnerabilidades típicas} & \textbf{Controles de seguridad} \\
+\midrule 7 & Aplicación & Inyección SQL, XSS, APIs inseguras, credenciales débiles & WAF, validación de entradas, HTTPS, OAuth, hardening de apps \\
+\midrule 6 & Presentación & Datos sin cifrar, formatos maliciosos & Cifrado TLS/SSL, firmas digitales \\
+\midrule 5 & Sesión & Secuestro de sesión, fijación de sesión & Gestión segura de sesiones, tokens, timeout \\
+\midrule 4 & Transporte & DoS/DDoS, escaneo de puertos & Firewalls de estado (stateful), filtrado de puertos \\
+\midrule 3 & Red & IP spoofing, suplantación de router, sniffing & ACLs, segmentación (VLANs), firewalls de capa 3, IPsec \\
+\midrule 2 & Enlace & MAC spoofing, ARP poisoning & Port security, DHCP snooping, cifrado de capa 2 \\
+\midrule 1 & Física & Interceptación de cable, acceso no autorizado & Cableado protegido, CCTV, controles de acceso físico (Clase 6) \\
+\bottomrule\end{tabularx}\end{center}
+\begin{reflexion}[La seguridad por capas]
+Un atacante puede comprometer una capa (ej. robar credenciales en la capa 7), pero si las capas inferiores están bien diseñadas (segmentación en capa 3, cifrado en capa 6), el impacto se limita. Esto es la \textbf{Defensa en Profundidad} aplicada al modelo OSI.
+\end{reflexion}
+\section{Componentes de Seguridad Lógica}
+\subsection{Firewall}
+\begin{definicion}[Firewall] Dispositivo de red (hardware o software) que controla el tráfico entrante y saliente basándose en reglas de seguridad predefinidas. Actúa como barrera entre redes de distintos niveles de confianza. \end{definicion}
+\textbf{Tipos principales:}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Firewall de filtrado de paquetes:} Analiza cabeceras IP (origen, destino, puerto). Rápido pero limitado.
+  \item \textbf{Firewall de estado (stateful):} Rastrea el estado de las conexiones activas. Más inteligente.
+  \item \textbf{Firewall de próxima generación (NGFW):} Integra inspección profunda de paquetes (DPI), IDS/IPS y filtrado de aplicaciones.
+  \item \textbf{WAF (Web Application Firewall):} Protege específicamente aplicaciones web (filtra tráfico HTTP/HTTPS).
+\end{itemize}
+\subsection{IDS / IPS}
+\begin{definicion}[IDS --- Intrusion Detection System] Sistema que \textbf{monitorea} el tráfico o la actividad del sistema en busca de patrones sospechosos y genera alertas. Es \textbf{pasivo}: detecta pero no bloquea. \end{definicion}
+\begin{definicion}[IPS --- Intrusion Prevention System] Evolución del IDS: además de detectar, \textbf{bloquea activamente} el tráfico malicioso. Es \textbf{activo} y se ubica en línea con el tráfico. \end{definicion}
+\subsection{Proxy y Gateway}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Proxy:} Intermediario entre el cliente y el servidor. Oculta la identidad interna, filtra contenido y cachea tráfico.
+  \item \textbf{Gateway:} Punto de entrada/salida entre redes con distintos protocolos o niveles de confianza.
+\end{itemize}
+\subsection{Zonas de Seguridad: la DMZ}
+\begin{definicion}[DMZ --- Zona Desmilitarizada] Subred perimetral que aloja los servicios expuestos a Internet (web, mail, DNS). Está separada de la red interna por firewalls. Si un atacante compromete un servidor en la DMZ, no accede directamente a la red interna. \end{definicion}
+\subsection{Otros controles lógicos}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Políticas de contraseñas:} longitud mínima, complejidad, expiración, bloqueo por intentos fallidos.
+  \item \textbf{Gestión de privilegios:} Principio de menor privilegio (cada usuario accede solo a lo necesario para su rol).
+  \item \textbf{Certificados digitales:} Garantizan autenticidad e integridad (PKI, CA, X.509).
+  \item \textbf{Backup:} Copias de seguridad periódicas, probadas y almacenadas fuera de línea (protección contra ransomware).
+\end{itemize}
+\section{Kali Linux: El arsenal del hacker ético}
+\begin{definicion}[Kali Linux] Distribución GNU/Linux basada en Debian, mantenida por Offensive Security, diseñada específicamente para auditorías de seguridad, pentesting, forense digital e investigación. Incluye cientos de herramientas preinstaladas y organizadas por categorías. \end{definicion}
+\begin{clave}[¿Por qué Linux y no Windows para pentesting?]\begin{itemize}[leftmargin=*]
+  \item La mayoría de las herramientas de seguridad son nativas de la línea de comandos de Unix/Linux.
+  \item Linux ofrece control total sobre la red (sockets raw, modo promiscuo).
+  \item Es open-source: podés auditar las herramientas que usás.
+  \item Kali es gratuito y se ejecuta en vivo (USB booteable), en máquina virtual o en hardware dedicado.
+\end{itemize}\end{clave}
+\subsection{Metapaquetes de Kali}
+Kali organiza sus herramientas en \textbf{metapaquetes} temáticos. Los principales son:
+\begin{itemize}[leftmargin=*]
+  \item \texttt{kali-tools-top10}: Las 10 herramientas más usadas.
+  \item \texttt{kali-tools-web}: Herramientas para aplicaciones web (Burp Suite, Nikto, OWASP ZAP).
+  \item \texttt{kali-tools-wireless}: Auditoría de redes Wi-Fi (Aircrack-ng, Wifite).
+  \item \texttt{kali-tools-exploitation}: Frameworks de explotación (Metasploit).
+  \item \texttt{kali-tools-sniffing-spoofing}: Análisis de tráfico (Wireshark, Tcpdump).
+  \item \texttt{kali-tools-forensics}: Análisis forense (Autopsy, Sleuth Kit).
+\end{itemize}
+\section{El Ciclo de Vida del Pentesting y sus Herramientas}
+Un pentesting profesional sigue una metodología estructurada. Kali provee herramientas para cada fase.
+\subsection{Fase 1: Reconocimiento (Information Gathering)}\textbf{Objetivo:} Recopilar información pública del objetivo sin interactuar directamente con sus sistemas.
+\begin{herramienta}[Nmap --- Escaneo de redes]\begin{itemize}[leftmargin=*]
+  \item \textbf{Función:} Descubrir hosts, puertos abiertos, servicios y sistemas operativos en una red.
+  \item \textbf{Ejemplo básico:}\begin{lstlisting}[language=bash]
+nmap -sS -p- -A 192.168.1.0/24
+  \end{lstlisting}
+  \item \textbf{Interpretación:} Escaneo SYN (-sS), todos los puertos (-p-), detección de servicios y SO (-A).
+\end{itemize}\end{herramienta}
+\begin{herramienta}[theHarvester --- OSINT]\begin{itemize}[leftmargin=*]
+  \item \textbf{Función:} Recolectar emails, subdominios y nombres de empleados de un dominio desde fuentes públicas.
+  \item \textbf{Ejemplo:}\begin{lstlisting}[language=bash]
+theHarvester -d ejemplo.com -b google
+  \end{lstlisting}
+\end{itemize}\end{herramienta}
+\begin{herramienta}[Otras herramientas de reconocimiento] Whois (información de registro de dominios), Maltego (análisis de relaciones OSINT), DNSdumpster. \end{herramienta}
+\subsection{Fase 2: Escaneo y Enumeración}\textbf{Objetivo:} Interactuar con los sistemas descubiertos para identificar vectores de ataque.
+\begin{herramienta}[Nikto --- Escáner de servidores web]\begin{itemize}[leftmargin=*]
+  \item \textbf{Función:} Busca vulnerabilidades conocidas en servidores web (archivos peligrosos, versiones desactualizadas, configuraciones erróneas).
+  \item \textbf{Ejemplo:}\begin{lstlisting}[language=bash]
+nikto -h http://192.168.1.10
+  \end{lstlisting}
+\end{itemize}\end{herramienta}
+\begin{herramienta}[Netcat --- La navaja suiza de TCP/IP]\begin{itemize}[leftmargin=*]
+  \item \textbf{Función:} Leer y escribir datos en conexiones de red usando TCP o UDP. Útil para banners, shells reversas y transferencia de archivos.
+  \item \textbf{Ejemplo (leer banner):}\begin{lstlisting}[language=bash]
+nc -v 192.168.1.10 80
+  \end{lstlisting}
+\end{itemize}\end{herramienta}
+\begin{herramienta}[Otras herramientas de enumeración] Enum4linux (enumeración de recursos Windows/Samba), SNMPwalk, Dirb/Gobuster (fuzzing de directorios web). \end{herramienta}
+\subsection{Fase 3: Explotación}\textbf{Objetivo:} Aprovechar las vulnerabilidades identificadas para obtener acceso al sistema.
+\begin{herramienta}[Metasploit Framework --- El estándar de explotación]\begin{itemize}[leftmargin=*]
+  \item \textbf{Función:} Plataforma de desarrollo y ejecución de exploits contra máquinas remotas. Incluye miles de exploits, payloads y módulos auxiliares.
+  \item \textbf{Ejemplo de flujo:}\begin{lstlisting}[language=bash]
+msfconsole
+search vsftpd
+use exploit/unix/ftp/vsftpd_234_backdoor
+set RHOSTS 192.168.1.10
+exploit
+  \end{lstlisting}
+\end{itemize}\end{herramienta}
+\begin{herramienta}[Searchsploit --- Base de datos de exploits offline]\begin{itemize}[leftmargin=*]
+  \item \textbf{Función:} Busca exploits públicos de Exploit-DB directamente desde la terminal.
+  \item \textbf{Ejemplo:}\begin{lstlisting}[language=bash]
+searchsploit apache 2.4
+  \end{lstlisting}
+\end{itemize}\end{herramienta}
+\subsection{Fase 4: Análisis de Tráfico (Sniffing)}\textbf{Objetivo:} Capturar y analizar el tráfico de red para identificar credenciales, protocolos inseguros o anomalías.
+\begin{herramienta}[Wireshark --- Analizador de protocolos]\begin{itemize}[leftmargin=*]
+  \item \textbf{Función:} Captura y visualiza paquetes de red en tiempo real. Esencial para entender qué viaja por la red y detectar credenciales en texto plano.
+  \item \textbf{Uso:} Se ejecuta desde entorno gráfico o con \texttt{tshark} en terminal.
+\end{itemize}\end{herramienta}
+\begin{herramienta}[Tcpdump --- Captura desde línea de comandos]\begin{itemize}[leftmargin=*]
+  \item \textbf{Función:} Captura paquetes sin interfaz gráfica. Ideal para servidores.
+  \item \textbf{Ejemplo:}\begin{lstlisting}[language=bash]
+tcpdump -i eth0 port 80 -w captura.pcap
+  \end{lstlisting}
+\end{itemize}\end{herramienta}
+\subsection{Fase 5: Post-Explotación y Reporte}\textbf{Objetivo:} Mantener el acceso, elevar privilegios y documentar los hallazgos.
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Elevación de privilegios:} Scripts como LinPEAS (Linux) o WinPEAS (Windows) para identificar vías de escalada.
+  \item \textbf{Reporte:} La fase más importante del pentesting ético. Sin un informe claro, el trabajo técnico no tiene valor para la organización.
+\end{itemize}
+\section{Ética y Legalidad en el uso de herramientas}
+\begin{alerta}[¡Fundamental!]
+Todas las herramientas de Kali Linux son de \textbf{doble uso}: sirven tanto para proteger como para atacar. Su uso está regulado por la ley.
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Nunca} escanees o explotes un sistema sin autorización escrita.
+  \item Usá siempre \textbf{entornos de práctica}: TryHackMe, Hack The Box, máquinas virtuales propias (Metasploitable, VulnHub).
+  \item En la Actividad A06, la investigación es \textbf{teórica/descriptiva}: se pide conocer las herramientas, no atacar sistemas reales.
+\end{itemize}\end{alerta}
+\section{Glosario de conceptos clave}
+\begin{description}[leftmargin=!, labelwidth=3.5cm, font=\bfseries]
+  \item[Seguridad Lógica] Protección de activos mediante controles de software, hardware y red.
+  \item[Firewall] Barrera que filtra tráfico según reglas de seguridad.
+  \item[DMZ] Subred perimetral para servicios expuestos a Internet.
+  \item[IDS/IPS] Sistemas de detección/prevención de intrusiones.
+  \item[WAF] Firewall específico para aplicaciones web.
+  \item[Pentesting] Prueba de penetración autorizada para evaluar la seguridad.
+  \item[Exploit] Código o programa que aprovecha una vulnerabilidad.
+  \item[Payload] Código malicioso que se ejecuta tras la explotación (ej. shell reversa).
+  \item[OSINT] Inteligencia de fuentes abiertas.
+  \item[Reconocimiento] Fase de recopilación de información del objetivo.
+  \item[Sniffing] Captura y análisis de tráfico de red.
+  \item[Hardening] Proceso de asegurar un sistema reduciendo su superficie de ataque.
+\end{description}
+\section{Autoevaluación}\label{sec:autoeval}
+Respondé por escrito; luego verificá en la Sección~\ref{sec:respuestas}.
+\begin{enumerate}[leftmargin=*]
+  \item Elegí dos capas del modelo OSI y, para cada una, identificá una vulnerabilidad típica y un control de seguridad que la mitigue.
+  \item Diferenciá \textbf{Firewall}, \textbf{IDS} e \textbf{IPS}. ¿Cuál de los tres bloquea activamente el tráfico malicioso?
+  \item ¿Qué es una \textbf{DMZ} y por qué es fundamental en el diseño de redes corporativas?
+  \item Describí las \textbf{5 fases del ciclo de vida del pentesting} y mencioná al menos una herramienta de Kali para cada una.
+  \item ¿Por qué es importante la fase de \textbf{reporte} en un pentesting ético? ¿Qué pasaría si un pentester encuentra una vulnerabilidad crítica pero no la documenta?
+\end{enumerate}
+\section{Respuestas de la Autoevaluación}\label{sec:respuestas}
+\begin{clave}[Nota para el estudiante] Estas respuestas son de referencia. Se valora la precisión técnica y la capacidad de vincular conceptos. \end{clave}
+\subsection*{Pregunta 1: Modelo OSI, vulnerabilidades y controles}
+\begin{respuesta}Dos ejemplos posibles:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Capa 3 (Red):}
+  \begin{itemize}
+    \item \textbf{Vulnerabilidad:} IP Spoofing (suplantación de dirección IP para evadir controles de acceso).
+    \item \textbf{Control:} Listas de Control de Acceso (ACL) en routers y firewalls de capa 3, o autenticación mediante IPsec.
+  \end{itemize}
+  \item \textbf{Capa 7 (Aplicación):}
+  \begin{itemize}
+    \item \textbf{Vulnerabilidad:} Inyección SQL (manipulación de consultas a la base de datos a través de formularios web).
+    \item \textbf{Control:} Web Application Firewall (WAF) y validación/sanitización de entradas en el código.
+  \end{itemize}
+\end{itemize}\end{respuesta}
+\subsection*{Pregunta 2: Firewall vs. IDS vs. IPS}
+\begin{respuesta}\begin{itemize}[leftmargin=*]
+  \item \textbf{Firewall:} Filtra el tráfico según reglas (IP, puerto, protocolo). Es la primera barrera, pero no inspecciona el contenido profundo de los paquetes.
+  \item \textbf{IDS (Intrusion Detection System):} Monitorea el tráfico en busca de firmas de ataques o anomalías y \textbf{genera alertas}, pero no bloquea. Es pasivo.
+  \item \textbf{IPS (Intrusion Prevention System):} Igual que el IDS, pero está ubicado «en línea» con el tráfico y \textbf{bloquea activamente} el tráfico malicioso detectado.
+\end{itemize}El que bloquea activamente es el \textbf{IPS}.\end{respuesta}
+\subsection*{Pregunta 3: La DMZ}
+\begin{respuesta}La \textbf{DMZ (Zona Desmilitarizada)} es una subred perimetral que se ubica entre Internet y la red interna de la organización. Aloja los servicios que deben ser accesibles desde afuera (servidores web, mail, DNS). Es fundamental porque:\begin{itemize}[leftmargin=*]
+  \item \textbf{Aísla los servicios expuestos:} Si un atacante compromete el servidor web en la DMZ, no tiene acceso directo a la red interna (archivos, bases de datos internas).
+  \item \textbf{Permite un control granular:} El firewall externo deja entrar tráfico solo a la DMZ; el firewall interno solo deja salir tráfico desde la DMZ hacia servicios específicos si es necesario.
+  \item \textbf{Facilita el monitoreo:} Todo el tráfico hacia/desde Internet pasa por un punto controlado.
+\end{itemize}\end{respuesta}
+\subsection*{Pregunta 4: Fases del pentesting y herramientas Kali}
+\begin{respuesta}\begin{enumerate}[leftmargin=*]
+  \item \textbf{Reconocimiento:} Recopilar información pública. \textbf{Herramienta:} theHarvester, Whois, Maltego.
+  \item \textbf{Escaneo / Enumeración:} Descubrir hosts, puertos y servicios. \textbf{Herramienta:} Nmap, Nikto, Netcat.
+  \item \textbf{Explotación:} Aprovechar vulnerabilidades para obtener acceso. \textbf{Herramienta:} Metasploit Framework, Searchsploit.
+  \item \textbf{Post-Explotación:} Mantener acceso, elevar privilegios, moverse lateralmente. \textbf{Herramienta:} LinPEAS, WinPEAS, Netcat (shell reversa).
+  \item \textbf{Reporte:} Documentar hallazgos y recomendar mitigaciones. \textbf{Herramienta:} Editores de informes, plantillas de la cátedra.
+\end{enumerate}\end{respuesta}
+\subsection*{Pregunta 5: Importancia del reporte}
+\begin{respuesta}El reporte es la fase más importante porque \textbf{traduce el trabajo técnico en valor de negocio}:\begin{itemize}[leftmargin=*]
+  \item Informa a la dirección \textbf{qué riesgos reales} existen y \textbf{cuánto cuesta} mitigarlos.
+  \item Permite priorizar la inversión en seguridad.
+  \item Sirve como evidencia para auditorías y cumplimiento normativo.
+\end{itemize}Si un pentester encuentra una vulnerabilidad crítica y no la documenta:\begin{itemize}[leftmargin=*]
+  \item El cliente \textbf{no puede corregirla}.
+  \item El atacante real la explotará eventualmente.
+  \item El pentester incumple su contrato y, dependiendo del marco legal, podría ser responsable por omisión.
+  \item La confianza en el profesional se destruye.
+\end{itemize}\end{respuesta}
+\section{Actividad A06: Herramientas de Seguridad Lógica}
+\begin{clave}[Consigna A06 --- Seguridad Lógica: Herramientas para conocer vulnerabilidades]
+\textbf{Metodología:} Trabajo de Investigación.
+\textbf{Consigna:} Obtener información acerca de herramientas que puedan utilizarse para comprometer la seguridad lógica. Compartir la experiencia.
+\textbf{Entregable:}
+\begin{enumerate}
+  \item Elegir \textbf{3 herramientas} de Kali Linux (o alternativas gratuitas) de categorías distintas (ej. una de reconocimiento, una de explotación, una de análisis de tráfico).
+  \item Para cada una, investigar y documentar:\begin{itemize}
+    \item ¿Qué hace y en qué fase del pentesting se usa?
+    \item ¿Qué comandos o parámetros básicos tiene?
+    \item ¿Qué vulnerabilidad o debilidad permite detectar o explotar?
+    \item ¿Qué salvaguarda mitiga el riesgo que la herramienta explota?
+  \end{itemize}
+  \item Redactar una reflexión ética sobre el uso responsable de estas herramientas.
+\end{enumerate}
+Subilo a la carpeta del Trabajo Integrador en Google Drive, otorgando permisos de comentario a \texttt{era.profe@gmail.com}.
+\end{clave}
+\textbf{Rúbrica de evaluación (según grilla de la cátedra):}
+\begin{center}\renewcommand{\arraystretch}{1.2}\begin{tabularx}{\textwidth}{@{} l c X @{} }
+\toprule\textbf{Criterio} & \textbf{Peso} & \textbf{Qué se espera para el «Excelente» (4)} \\
+\midrule A. Recopilación de información & 50\% & Utiliza de manera completa fuentes confiables (documentación oficial de Kali, man pages, libros de pentesting) y las cita correctamente. \\
+B. Elaboración de documentos & 20\% & Cumple adecuadamente con los formatos atento a la planilla de estandarización brindada por la cátedra. \\
+C. Elaboración de presentaciones & 10\% & Argumenta de manera sólida el inconveniente del caso y su solución. \\
+F. Consciencia de buenas prácticas & 20\% & Evidencia permanentemente el respeto por los límites éticos y legales en la descripción de las herramientas. \\
+\bottomrule\end{tabularx}\end{center}
+\section{Fuentes y bibliografía}
+\subsection{Bibliografía obligatoria (según programa)}\begin{itemize}[leftmargin=*]
+  \item Chicano Tejada, E. (2023). \textit{Auditoría de seguridad informática. IFCT0109} (2.ª ed.). IC Editorial --- eLibro.
+  \item Elgueta, R. (s.f.). \textit{Guías de Clase unidad III}. Material inédito. UCH.
+\end{itemize}
+\subsection{Bibliografía complementaria (según programa)}\begin{itemize}[leftmargin=*]
+  \item Bancal, D. (2022). \textit{Seguridad informática} (5.ª ed.). Ediciones ENI.
+  \item Evans, L. (2019). \textit{Ethical Hacking: The Ultimate Guide to Using Penetration Testing to Audit and Improve the Cybersecurity of Computer Networks for Beginners, Including Tips on Social Engineering}. Amazon Digital Services LLC --- KDP.
+  \item White, A. \& Clark, B. (2017). \textit{BTFM: Blue Team Field Manual}. CreateSpace Independent Publishing Platform.
+  \item ISO/IEC (2005). \textit{Information security management 27001}.
+\end{itemize}
+\subsection{Bibliografía específica de Kali y Pentesting}\begin{itemize}[leftmargin=*]
+  \item Offensive Security. \textit{Kali Linux Revealed: Mastering the Penetration Testing Distribution}.
+  \item Georgia Weidman. (2014). \textit{Penetration Testing: A Hands-On Introduction to Hacking}. No Starch Press.
+  \item Patrick Engebretson. (2013). \textit{The Basics of Hacking and Penetration Testing}. Syngress.
+\end{itemize}
+\subsection{Recursos web y laboratorios}\begin{itemize}[leftmargin=*]
+  \item Documentación oficial de Kali Linux: \url{https://www.kali.org/docs/}
+  \item TryHackMe (laboratorio oficial de la materia): \url{https://tryhackme.com}
+  \item OWASP Top 10: \url{https://owasp.org/www-project-top-ten/}
+  \item Nmap Reference Guide: \url{https://nmap.org/book/man.html}
+  \item Metasploit Documentation: \url{https://docs.metasploit.com/}
+\end{itemize}
+\end{document}
