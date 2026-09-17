@@ -1,0 +1,301 @@
+% =========================================================
+%  CUADERNILLO DE ESTUDIO - CLASE 10
+%  Seguridad Aplicada a Sistemas de Información
+%  Compilar con: pdfLaTeX (Overleaf o TeX Live/MiKTeX)
+% =========================================================
+\documentclass[11pt,a4paper]{article}
+
+% ----------------- Paquetes -----------------
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\geometry{left=2.2cm,right=2.2cm,top=2.5cm,bottom=2.5cm}
+\usepackage[table]{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{fontawesome5}
+\usepackage{comment}
+
+% ----------------- Colores -----------------
+\definecolor{azulmat}{RGB}{0,84,140}
+\definecolor{griscaja}{RGB}{245,245,245}
+\definecolor{verdesuave}{RGB}{232,244,232}
+\definecolor{naranjasuave}{RGB}{255,244,230}
+\definecolor{azulsuave}{RGB}{232,240,250}
+\definecolor{violetasuave}{RGB}{240,232,250}
+\definecolor{rojosuave}{RGB}{255,235,235}
+\definecolor{thmgreen}{RGB}{0,168,132}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=azulmat,
+  urlcolor=azulmat,
+  citecolor=azulmat
+}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{griscaja},
+  frame=single,
+  breaklines=true,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{green!60!black},
+  stringstyle=\color{red},
+  showstringspaces=false,
+  numbers=left,
+  numberstyle=\tiny\color{gray}
+}
+
+% ----------------- Cajas -----------------
+\newtcolorbox{definicion}[1][Definición]{%
+  enhanced, breakable, colback=azulsuave, colframe=azulmat,
+  fonttitle=\bfseries, title=#1}
+\newtcolorbox{ejemplo}[1][Ejemplo]{%
+  enhanced, breakable, colback=naranjasuave, colframe=orange!75!black,
+  fonttitle=\bfseries, title=#1}
+\newtcolorbox{reflexion}[1][Para reflexionar]{%
+  enhanced, breakable, colback=verdesuave, colframe=green!55!black,
+  fonttitle=\bfseries, title=#1}
+\newtcolorbox{clave}[1][Idea clave]{%
+  enhanced, breakable, colback=griscaja, colframe=black!70,
+  fonttitle=\bfseries, title=#1}
+\newtcolorbox{respuesta}[1][Respuesta]{%
+  enhanced, breakable, colback=violetasuave, colframe=violet!60!black,
+  fonttitle=\bfseries, title=#1}
+\newtcolorbox{alerta}[1][Límite Ético / Legal]{%
+  enhanced, breakable, colback=rojosuave, colframe=red!70!black,
+  fonttitle=\bfseries, title=#1}
+\newtcolorbox{tip}[1][Tip Profesional]{%
+  enhanced, breakable, colback=thmgreen!10, colframe=thmgreen!80!black,
+  fonttitle=\bfseries, title=#1}
+
+% ----------------- Encabezado -----------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Seguridad Aplicada a Sistemas de Información}
+\fancyhead[R]{\small Cuadernillo de Estudio --- Clase 10}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}{\large\bfseries\color{azulmat}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{azulmat!80!black}}{\thesubsection.}{0.6em}{}
+
+% ----------------- Portada -----------------
+\title{%
+  \rule{\textwidth}{1pt}\\[0.4cm]
+  \textbf{\Large Cuadernillo de Estudio --- Clase 10}\\[0.2cm]
+  \large Del Hack al Negocio: Forense, Reporte Ejecutivo y Mesa de Crisis\\[0.2cm]
+  \rule{\textwidth}{1pt}\\[0.4cm]
+  \normalsize Seguridad Aplicada a Sistemas de Información\\
+  Licenciatura en Sistemas de Información --- Facultad de Informática y Diseño\\
+  Docente: Ing.\ Rodrigo Atilio Elgueta\\[0.2cm]
+  \small Ciclo Académico Vigente
+}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\tableofcontents
+\newpage
+
+% =========================================================
+\section{Objetivos de aprendizaje}
+En la Clase 9 y con la Guía de TryHackMe aprendiste a \textbf{pensar y actuar como un atacante (Red Team)}. El objetivo de esta Clase 10 es dar el giro profesional: aprender a \textbf{pensar como el defensor (Blue Team) y como el Directorio de la empresa}.
+
+Al finalizar, serás capaz de:
+\begin{itemize}[leftmargin=*]
+  \item Analizar tu propio hack desde la perspectiva forense (¿qué rastro dejaste en los logs?).
+  \item Traducir vulnerabilidades técnicas (CVEs) a \textbf{Riesgos de Negocio} (lucro cesante, multas legales).
+  \item Estructurar un \textbf{Informe Ejecutivo} vs. un \textbf{Informe Técnico}.
+  \item Diseñar un \textbf{Protocolo de Contingencia} y entender la dinámica de una \textbf{Mesa de Crisis (Tabletop)}.
+  \item Cerrar la \textbf{Actividad A08} para INSECUR S.A. con un entregable de nivel corporativo.
+\end{itemize}
+
+\begin{clave}[El cambio de sombrero]
+Un \textit{Script Kiddie} celebra cuando obtiene la flag de root. Un \textbf{Consultor de Ciberseguridad} celebra cuando logra que el Directorio apruebe el presupuesto para parchar la vulnerabilidad antes de que un atacante real la explote. Tu informe es tu verdadera herramienta de hacking.
+\end{clave}
+
+% =========================================================
+\section{La Mirada del Blue Team: Forense Post-Mortem}
+Cuando terminás tu pentesting en TryHackMe, la máquina queda comprometida. Pero, ¿cómo se dio cuenta (o no se dio cuenta) el administrador de sistemas de INSECUR S.A.?
+
+\begin{definicion}[Análisis Forense Digital (Post-Mortem)]
+Es la ciencia de preservar, identificar, extraer y documentar la evidencia informática. En un pentesting ético, debés documentar \textbf{qué huellas dejaste} para que el equipo defensor sepa qué buscar en sus sistemas de monitoreo (SIEM).
+\end{definicion}
+
+\subsection{Las huellas que deja un Pentester}
+Al explotar una máquina, generás ruido. Un buen informe le dice al cliente cómo detectar ese ruido:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Logs de Autenticación:} En Linux (\texttt{/var/log/auth.log}) o Windows (Event Viewer), quedarán registrados los cientos de intentos fallidos de tu ataque de fuerza bruta con Hydra, y el login exitoso posterior.
+  \item \textbf{Logs de Servicios Web:} Si explotaste una Inyección SQL o subiste una Web Shell, el access.log de Apache/Nginx mostrará peticiones HTTP anómalas (códigos de estado 500, URLs con caracteres extraños como \texttt{UNION SELECT}).
+  \item \textbf{Creación de Archivos:} Cuando subiste \texttt{linpeas.sh} o tu payload de Metasploit, el sistema de archivos registró la creación de esos archivos. Un antivirus o un sistema FIM (File Integrity Monitoring) debería haber alertado.
+\end{itemize}
+
+\begin{tip}[El valor agregado de tu informe]
+En tu informe para INSECUR S.A., no solo digas «Exploté el SSH». Agregá: \textit{«El ataque generó 450 líneas de error en el auth.log en un lapso de 2 minutos. Recomendación: Configurar Fail2Ban para banear IPs tras 3 intentos fallidos y alertar al SOC».} Eso es pensar como Blue Team.
+\end{tip}
+
+% =========================================================
+\section{El Arte del Informe: Traduciendo el Caos}
+El Directorio de INSECUR S.A. no sabe qué es un \textit{Buffer Overflow}, ni le importa tu script en Python. Ellos hablan el idioma del \textbf{Riesgo de Negocio}, el \textbf{Lucro Cesante} y la \textbf{Reputación}.
+
+Tu entregable (A08) debe dividirse estrictamente en dos audiencias:
+
+\subsection{1. El Resumen Ejecutivo (Para el CEO / Directorio)}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Alcance y Metodología:} Qué se auditó y bajo qué reglas (ROE).
+  \item \textbf{Hallazgos Críticos en lenguaje de negocios:} \textit{«Se detectó que la base de datos de clientes está expuesta a internet sin contraseña. De ser explotada por un actor malicioso, INSECUR S.A. enfrenta multas millonarias por la Ley de Protección de Datos Personales (25.326), demandas colectivas y un daño reputacional que podría resultar en la pérdida del 20\% de la cartera de clientes».}
+  \item \textbf{Nivel de Riesgo Global y Pedido de Inversión.}
+\end{itemize}
+
+\subsection{2. El Informe Técnico (Para el Gerente de IT / Sysadmins)}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Fichas de Hallazgos:} CVE, CWE, CVSS, comandos utilizados y hashes de las flags como evidencia.
+  \item \textbf{Remediación Técnica:} \textit{«Actualizar Apache a la versión X.X.X», «Implementar la regla Y en el WAF», «Revocar el permiso SUID del binario /usr/bin/find»}.
+\end{itemize}
+
+% =========================================================
+\section{El Protocolo de Contingencia y la Mesa de Crisis}
+La consigna de A08 exige un \textbf{Protocolo de Actuación ante Fallas}. ¿Qué pasa si IT aplica tu recomendación de «actualizar el framework de la web» y, al hacerlo, la página de ventas de INSECUR S.A. deja de funcionar, deteniendo la facturación?
+
+\begin{definicion}[Mesa de Crisis (Tabletop Exercise)]
+Simulación teórica donde los roles clave de la empresa (CEO, Legal, IT, RRPP) se reúnen para ensayar su respuesta ante un incidente catastrófico (ej. Ransomware).
+\end{definicion}
+
+Un Protocolo de Contingencia profesional en tu informe debe dictar:
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Entorno de Homologación (Staging):} Prohibido aplicar parches de seguridad directo en Producción. Primero se prueban en un servidor espejo.
+  \item \textbf{Backups Previos (Snapshot):} Obligatorio tomar una instantánea del servidor antes de tocar configuraciones críticas.
+  \item \textbf{Ventana de Mantenimiento:} Aplicar cambios en horarios de menor tráfico.
+  \item \textbf{Plan de Rollback (RTO):} Si el parche rompe la aplicación, definir el procedimiento exacto para restaurar el backup en menos de $X$ horas (\textbf{Recovery Time Objective}).
+\end{enumerate}
+
+\begin{reflexion}[El puente hacia la Unidad VI]
+Si el parche falla y la empresa es atacada de verdad mientras está caída, se activa el \textbf{Plan de Continuidad de Negocio (BCP)}. Este concepto, que nace de tu informe de pentesting, es exactamente lo que evaluaremos en la Actividad A10 (Trabajo de Estrés por Roles ante un Ransomware).
+\end{reflexion}
+
+% =========================================================
+\section{Ética de la Revelación (Disclosure)}
+Al terminar el contrato, te encontrás con vulnerabilidades que no solo afectan a INSECUR S.A., sino a sus clientes o a software de terceros.
+
+\begin{alerta}[¿A quién le aviso?]
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Divulgación Responsable (Responsible Disclosure):} Reportar la falla en privado al vendor (ej. Microsoft, Apache) y darles un plazo (ej. 90 días) para lanzar un parche antes de hacer pública la vulnerabilidad.
+  \item \textbf{Divulgación Completa (Full Disclosure):} Publicar el exploit y la vulnerabilidad de inmediato para forzar al vendor a actuar y advertir a la comunidad. (Altamente controversial y riesgoso legalmente).
+  \item \textbf{Bug Bounty:} Reportar a través de plataformas oficiales (HackerOne, Bugcrowd) para obtener una recompensa económica y protección legal.
+\end{itemize}
+Como consultor de INSECUR S.A., tu contrato te obliga a la \textbf{confidencialidad absoluta}. No podés publicar los hallazgos en tu blog personal sin un acuerdo de divulgación (NDA) explícito.
+\end{alerta}
+
+% =========================================================
+\section{Glosario de conceptos clave}
+\begin{description}[leftmargin=!, labelwidth=3.5cm, font=\bfseries]
+  \item[Blue Team] Equipo defensivo encargado de monitorear, detectar y responder a incidentes.
+  \item[Post-Mortem] Análisis forense realizado después de que un incidente o pentesting ha concluido.
+  \item[SIEM] \textit{Security Information and Event Management}. Software que centraliza y analiza logs.
+  \item[Tabletop] Ejercicio de simulación de crisis en mesa, sin tocar sistemas reales.
+  \item[RTO] \textit{Recovery Time Objective}. Tiempo máximo aceptable que un sistema puede estar caído.
+  \item[Rollback] Procedimiento de reversa para volver al estado anterior de un sistema tras una actualización fallida.
+  \item[NDA] \textit{Non-Disclosure Agreement}. Acuerdo de confidencialidad legal.
+\end{description}
+
+% =========================================================
+\section{Autoevaluación}\label{sec:autoeval}
+Respondé por escrito; luego verificá en la Sección~\ref{sec:respuestas}.
+
+\begin{enumerate}[leftmargin=*]
+  \item Si durante tu pentesting en TryHackMe lanzaste un ataque de fuerza bruta con Hydra contra el puerto 22 (SSH), ¿en qué archivo de logs del servidor Linux debería el Blue Team ver tu rastro y qué herramienta administrativa sugerirías para mitigarlo?
+  \item En tu informe para INSECUR S.A., el Gerente de IT te dice: \textit{«Tu recomendación de deshabilitar el protocolo SMBv1 es muy buena, pero si lo hacemos, las impresoras de red de la oficina dejarán de funcionar y el negocio se detiene.»} ¿Cómo resolvés este conflicto aplicando los conceptos de \textbf{Riesgo Residual} y \textbf{Contingencia}?
+  \item ¿Cuál es la diferencia fundamental entre el \textbf{Resumen Ejecutivo} y el \textbf{Informe Técnico} dentro de tu entregable para A08?
+  \item ¿Por qué un pentester ético está obligado por contrato a mantener la \textbf{confidencialidad} de los hallazgos y no puede publicarlos en redes sociales como un logro personal?
+\end{enumerate}
+
+% =========================================================
+\section{Respuestas de la Autoevaluación}\label{sec:respuestas}
+
+\begin{clave}[Nota para el estudiante]
+Estas respuestas te servirán de guía para estructurar la sección de recomendaciones y contingencia de tu informe final.
+\end{clave}
+
+\subsection*{Pregunta 1: Rastro Forense y Mitigación}
+\begin{respuesta}
+El rastro de un ataque de fuerza bruta al SSH queda registrado en el archivo \texttt{/var/log/auth.log} (o \texttt{/var/log/secure} en distribuciones basadas en RedHat), mostrando cientos de intentos de autenticación fallidos (\textit{Failed password for...}) desde la IP del atacante.
+\textbf{Mitigación sugerida:} Implementar \textbf{Fail2Ban}, una herramienta que monitorea estos logs y actualiza las reglas del firewall (iptables) para banear automáticamente la IP del atacante tras un umbral de intentos fallidos. Además, sugerir deshabilitar el login por contraseña y forzar el uso de claves SSH asimétricas.
+\end{respuesta}
+
+\subsection*{Pregunta 2: Conflicto IT vs Seguridad (Contingencia)}
+\begin{respuesta}
+Este es un escenario clásico de \textbf{Riesgo Residual} y \textbf{Operatividad vs Seguridad}. No se puede forzar el parche si detiene el negocio. La solución profesional es:
+\begin{enumerate}
+  \item \textbf{Mitigación compensatoria:} Si no se puede apagar SMBv1, se debe \textbf{segmentar la red} (VLANs) y bloquear SMBv1 en el firewall interno para que solo las IPs de las impresoras y sus servidores de impresión específicos puedan comunicarse por ese puerto, aislando el riesgo.
+  \item \textbf{Plan de migración (Contingencia):} Presupuestar el reemplazo de las impresoras legacy o la actualización de sus drivers a medio plazo.
+  \item \textbf{Aceptación de Riesgo:} La dirección de INSECUR S.A. debe firmar una «Aceptación de Riesgo» formal, asumiendo la responsabilidad de mantener una vulnerabilidad crítica activa por motivos operativos.
+\end{enumerate}
+\end{respuesta}
+
+\subsection*{Pregunta 3: Resumen Ejecutivo vs Técnico}
+\begin{respuesta}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Resumen Ejecutivo:} Redactado para la Alta Gerencia / Directorio. No contiene código ni comandos. Se enfoca en el \textbf{Impacto de Negocio} (pérdidas financieras, multas legales, daño a la marca), el nivel de riesgo global y las decisiones estratégicas que deben tomarse (ej. aprobar presupuesto para nuevos firewalls).
+  \item \textbf{Informe Técnico:} Redactado para los Administradores de Sistemas y Desarrolladores. Contiene los CVEs, los payloads, las capturas de pantalla, las rutas de los archivos vulnerables y los pasos exactos (código, configuraciones) para \textbf{remediar} (parchar) cada vulnerabilidad.
+\end{itemize}
+\end{respuesta}
+
+\subsection*{Pregunta 4: Confidencialidad y Ética}
+\begin{respuesta}
+Un pentester ético firma un \textbf{NDA (Acuerdo de Confidencialidad)} y un contrato de servicios. Publicar las vulnerabilidades de un cliente sin autorización viola el contrato, expone a la empresa a ataques reales por parte de oportunistas que lean la publicación, y constituye un delito de violación de secretos y confidencialidad. El logro profesional se demuestra en la capacidad de remediar el problema en privado, no en la exposición pública de la debilidad del cliente.
+\end{respuesta}
+
+% =========================================================
+\section{Recordatorio Final: Actividad A08}
+\begin{clave}[Cierre de la Práctica de Vulnerabilidades y Exploit]
+\textbf{Cliente:} INSECUR S.A.\\
+\textbf{Tareas:} Completar Núcleo THM + Sala de Elección.\\
+\textbf{Entregable:} Repositorio GitHub (\texttt{legajo-XXXXX}) con:
+\begin{itemize}
+  \item Informe PDF (Resumen Ejecutivo + Fichas Técnicas + Protocolo de Contingencia).
+  \item Carpeta de Evidencias (Capturas con username THM visible).
+  \item Carpeta de Bitácoras (\texttt{history}).
+  \item Hashes SHA-256 de las flags obtenidas.
+\end{itemize}
+\end{clave}
+
+\textbf{Rúbrica de evaluación (A08):}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{} l c X @{}}
+\toprule
+\textbf{Criterio} & \textbf{Peso} & \textbf{Foco de Evaluación} \\
+\midrule
+A. Recopilación & 10\% & Fuentes, CVEs, documentación oficial. \\
+B. Elaboración de documentos & 25\% & Uso estricto de la Plantilla de Pentesting. \\
+C. Presentaciones & 10\% & Claridad del Resumen Ejecutivo. \\
+D. Integración de Soluciones & 25\% & \textbf{Parches y Protocolo de Contingencia.} \\
+E. Selección de herramientas & 20\% & Justificación de Nmap, Burp, Metasploit, etc. \\
+F. Consciencia de buenas prácticas & 10\% & Ética, ROE, Limpieza y Anonimización. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =========================================================
+\section{Fuentes y bibliografía}
+
+\begin{itemize}[leftmargin=*]
+  \item TryHackMe. \textit{Basic Pentesting \& Pentesting Fundamentals}.
+  \item NIST (2008). \textit{Technical Guide to Information Security Testing and Assessment (SP 800-115)}.
+  \item Chicano Tejada, E. (2023). \textit{Auditoría de seguridad informática. IFCT0109} (2.ª ed.). IC Editorial --- eLibro.
+  \item Evans, L. (2019). \textit{Ethical Hacking: The Ultimate Guide to Using Penetration Testing...}. Amazon Digital Services LLC --- KDP.
+  \item Weidman, G. (2014). \textit{Penetration Testing: A Hands-On Introduction to Hacking}. No Starch Press.
+  \item PTES (Penetration Testing Execution Standard): \url{http://www.pentest-standard.org/}
+\end{itemize}
+
+\end{document}

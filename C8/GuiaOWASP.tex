@@ -1,0 +1,969 @@
+% =========================================================
+%  GUÍA COMPLETA DE RESOLUCIÓN - OWASP JUICE SHOP
+%  Manual de Soluciones para todos los desafíos
+%  Seguridad Aplicada a Sistemas de Información
+% =========================================================
+\documentclass[11pt,a4paper]{article}
+
+% ----------------- Paquetes -----------------
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\geometry{left=2.2cm,right=2.2cm,top=2.5cm,bottom=2.5cm}
+\usepackage[table]{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{longtable}
+\usepackage{multicol}
+\usepackage{fontawesome5}
+
+% ----------------- Colores -----------------
+\definecolor{azulmat}{RGB}{0,84,140}
+\definecolor{griscaja}{RGB}{245,245,245}
+\definecolor{verdesuave}{RGB}{232,244,232}
+\definecolor{naranjasuave}{RGB}{255,244,230}
+\definecolor{azulsuave}{RGB}{232,240,250}
+\definecolor{rojosuave}{RGB}{255,235,235}
+\definecolor{violetasuave}{RGB}{240,232,250}
+\definecolor{owasporange}{RGB}{238,104,32}
+\definecolor{juicegreen}{RGB}{111,195,75}
+\definecolor{dificilred}{RGB}{192,57,43}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=azulmat,
+  urlcolor=azulmat,
+  citecolor=azulmat
+}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  backgroundcolor=\color{griscaja},
+  frame=single,
+  breaklines=true,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{green!60!black},
+  stringstyle=\color{red},
+  showstringspaces=false,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=8pt
+}
+
+% ----------------- Cajas -----------------
+\newtcolorbox{clave}[1][Idea clave]{%
+  enhanced, breakable, colback=griscaja, colframe=black!70,
+  fonttitle=\bfseries, title=#1}
+
+\newtcolorbox{alerta}[1][Ética y Legalidad]{%
+  enhanced, breakable, colback=rojosuave, colframe=red!70!black,
+  fonttitle=\bfseries, title=#1}
+
+\newtcolorbox{desafio}[1][Desafío]{%
+  enhanced, breakable, colback=orange!5, colframe=owasporange,
+  fonttitle=\bfseries, title=#1}
+
+\newtcolorbox{solucion}[1][Solución]{%
+  enhanced, breakable, colback=green!5, colframe=juicegreen,
+  fonttitle=\bfseries, title=#1}
+
+\newtcolorbox{pista}[1][Pista]{%
+  enhanced, breakable, colback=azulsuave, colframe=azulmat,
+  fonttitle=\bfseries, title=#1}
+
+\newtcolorbox{teoria}[1][Concepto Teórico]{%
+  enhanced, breakable, colback=violetasuave, colframe=violet!60!black,
+  fonttitle=\bfseries, title=#1}
+
+% ----------------- Comando para fichas de desafío -----------------
+\newcommand{\fichadesafio}[5]{%
+\begin{desafio}[#1 \hfill \faStar\ #2]%
+\textbf{Categoría:} #3 \\
+\textbf{Objetivo:} #4 \\[0.2cm]
+#5
+\end{desafio}%
+}
+
+% ----------------- Encabezado -----------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Guía Completa --- OWASP Juice Shop}
+\fancyhead[R]{\small Soluciones de Desafíos}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}{\large\bfseries\color{azulmat}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{owasporange}}{\thesubsection.}{0.6em}{}
+
+% ----------------- Portada -----------------
+\title{%
+  \rule{\textwidth}{1pt}\\[0.3cm]
+  \textbf{\Huge \faLock{} Guía Completa de Resolución}\\[0.3cm]
+  \textbf{\Large OWASP Juice Shop}\\[0.3cm]
+  \large Manual de Soluciones para todos los desafíos\\[0.3cm]
+  \rule{\textwidth}{1pt}\\[0.4cm]
+  \normalsize Seguridad Aplicada a Sistemas de Información\\
+  Facultad de Informática y Diseño\\
+  Docente: Ing.\ Rodrigo Atilio Elgueta\\[0.2cm]
+  \small Ciclo Académico Vigente
+}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\tableofcontents
+\newpage
+
+% =========================================================
+\section{Cómo usar esta guía}
+
+\begin{clave}[Recomendación pedagógica]
+Esta guía contiene las \textbf{soluciones} de los desafíos. Se recomienda:
+\begin{enumerate}[leftmargin=*]
+  \item Intentar resolver el desafío \textbf{sin ayuda} durante al menos 30 minutos.
+  \item Si te trabás, leer primero la \textbf{Pista} (te orienta sin dar la respuesta).
+  \item Solo recurrir a la \textbf{Solución} completa si agotaste las opciones.
+  \item \textbf{Documentar} cada desafío resuelto en tu informe usando la plantilla de la cátedra.
+\end{enumerate}
+\end{clave}
+
+\begin{alerta}
+Estas técnicas \textbf{solo} pueden aplicarse contra la instancia local de Juice Shop que vos mismo levantaste. Usarlas contra otros sistemas sin autorización constituye un delito.
+\end{alerta}
+
+\subsection{Convenciones}
+\begin{itemize}[leftmargin=*]
+  \item \faStar\ a \faStar\faStar\faStar\faStar\faStar: nivel de dificultad del desafío.
+  \item La URL base asumida es \url{http://localhost:3000}.
+  \item Los nombres, endpoints y pistas pueden cambiar entre versiones; el \textbf{Score Board de la instancia} es la fuente de verdad.
+  \item Los ejemplos se deben probar únicamente en la instancia local y descartable del laboratorio. No se incluyen payloads de DoS ni de ejecución remota.
+\end{itemize}
+
+\begin{pista}[Control de versión]
+Antes de resolver la guía, anotá la versión de Juice Shop (\texttt{Help} $\rightarrow$ \texttt{About} o la etiqueta de Docker). Si un nombre o endpoint de esta guía no coincide, priorizá el desafío y la pista que muestra tu Score Board y documentá la diferencia.
+\end{pista}
+
+% =========================================================
+\section{Configuración del Entorno}
+
+\subsection{Opción recomendada: Docker}
+\begin{lstlisting}[language=bash]
+docker pull bkimminich/juice-shop
+docker run --rm -p 3000:3000 bkimminich/juice-shop
+\end{lstlisting}
+Accedé a \url{http://localhost:3000}. Para reiniciar todo (incluida la BD), simplemente eliminá el contenedor y volvé a ejecutarlo.
+
+\subsection{Opción con Node.js}
+\begin{lstlisting}[language=bash]
+git clone https://github.com/juice-shop/juice-shop.git
+cd juice-shop
+npm install
+npm start
+\end{lstlisting}
+
+\subsection{Verificar que funciona}
+\begin{itemize}[leftmargin=*]
+  \item Deberías ver la tienda «OWASP Juice Shop».
+  \item Abrí la consola del navegador (F12); no debe haber errores de conexión.
+  \item Registrate con un usuario de prueba (ej. \texttt{test@test.com} / \texttt{test1234}).
+\end{itemize}
+
+\subsection{Herramientas necesarias}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{@{} p{3.5cm} X @{}}
+\toprule
+\textbf{Herramienta} & \textbf{Uso principal} \\
+\midrule
+Burp Suite Community & Interceptación y modificación de peticiones HTTP/REST. \\
+FoxyProxy (Firefox) & Alternar el tráfico a través de Burp (puerto 8080). \\
+DevTools del navegador (F12) & Inspeccionar JS, Network, Storage, Console. \\
+JWT.io & Decodificar y manipular tokens JWT. \\
+cURL / HTTPie & Enviar peticiones a la API desde terminal. \\
+SQLmap & Automatizar inyecciones SQL (uso educativo). \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =========================================================
+\section{El Score Board y la mecánica de desafíos}
+\label{sec:scoreboard}
+
+El \textbf{Score Board} es la página oculta que lista todos los desafíos, su estado y da pistas. Encontrarlo es el primer desafío.
+
+\begin{desafio}[Score Board \hfill \faStar]
+\textbf{Objetivo:} Encontrar la página no anunciada con el tablero de puntuación.
+\begin{solucion}
+\begin{enumerate}[leftmargin=*]
+  \item Abrí las DevTools (F12) y andá a la pestaña \textbf{Sources} o \textbf{Debugger}.
+  \item En los archivos JS principales (\texttt{main.*.js}), presioná \texttt{Ctrl+F}.
+  \item Buscá la palabra \texttt{score}.
+  \item Encontrarás una definición de ruta de Angular: \texttt{path: 'score-board'}.
+  \item Navegá manualmente a \url{http://localhost:3000/#/score-board}.
+\end{enumerate}
+\end{solucion}
+\end{desafio}
+
+\begin{clave}[Dato útil]
+En versiones recientes, si activás los «Hacking Challenges» desde el menú de configuración o encontrás el Score Board, se desbloquean pistas adicionales y un modo tutorial.
+\end{clave}
+
+% =========================================================
+\section{Tabla Maestra de Desafíos}
+A continuación, el listado completo organizado por categoría. Las soluciones detalladas de cada uno están en las secciones posteriores.
+
+{\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{@{} p{5cm} p{4.5cm} c @{}}
+\toprule
+\textbf{Desafío} & \textbf{Categoría} & \textbf{Dif.} \\
+\midrule
+\endhead
+Score Board & Misconfiguration & \faStar \\
+Error Handling & Misconfiguration & \faStar \\
+Privacy Policy & Documentation & \faStar \\
+Confidential Document & Sensitive Data & \faStar \\
+Login Admin & Injection & \faStar \\
+Forged Feedback & Injection & \faStar\faStar \\
+Zero Stars & Validation & \faStar \\
+Client-side XSS Protection & XSS & \faStar \\
+CAPTCHA Bypass & Auth & \faStar\faStar\faStar \\
+Exposed Metrics & Sensitive Data & \faStar \\
+Password Strength & Auth & \faStar\faStar \\
+Repetitive Registration & Auth & \faStar \\
+Easter Egg & Sensitive Data & \faStar\faStar \\
+Forged Review & Business Logic & \faStar\faStar \\
+Product Tampering & Injection & \faStar\faStar\faStar \\
+Basket Access & Access Control & \faStar\faStar \\
+Manipulate Basket & Access Control & \faStar\faStar \\
+User Credentials & Auth & \faStar\faStar \\
+Admin Registration & Access Control & \faStar\faStar \\
+Security Answer & Auth & \faStar\faStar \\
+Login Jim & Injection & \faStar\faStar \\
+Login Bender & Injection & \faStar\faStar \\
+Login Amy & Auth & \faStar\faStar\faStar \\
+Login MC SafeSearch & Auth & \faStar\faStar\faStar \\
+Login Support Team & Auth & \faStar\faStar\faStar \\
+Database Schema & Injection & \faStar\faStar\faStar \\
+Forged Coupon & Business Logic & \faStar\faStar\faStar\faStar \\
+Christmas Special & Business Logic & \faStar\faStar \\
+Upload Size & Validation & \faStar\faStar \\
+Upload Type & Validation & \faStar\faStar \\
+XXE Data Exfiltration & XXE & \faStar\faStar\faStar \\
+XXE DoS & XXE & \faStar\faStar\faStar \\
+Leaked Unsafe Product & Sensitive Data & \faStar\faStar\faStar \\
+Leaked Access Logs & Sensitive Data & \faStar\faStar\faStar \\
+Access Log & Sensitive Data & \faStar\faStar\faStar \\
+Missing Encoding & Sensitive Data & \faStar\faStar \\
+JWT Issues & Auth & \faStar\faStar \\
+Forged Signed JWT & Auth & \faStar\faStar\faStar\faStar \\
+JWT Unsigned & Auth & \faStar\faStar\faStar \\
+Login CISO & Auth & \faStar\faStar\faStar \\
+Two Factor Authentication & Auth & \faStar\faStar\faStar\faStar \\
+Reset Jim's Password & Auth & \faStar\faStar\faStar \\
+Reset Bender's Password & Auth & \faStar\faStar\faStar\faStar \\
+Reset Morty's Password & Auth & \faStar\faStar\faStar\faStar \\
+NoSQL DoS & Injection & \faStar\faStar\faStar\faStar \\
+Mass Disparition & Injection & \faStar\faStar\faStar\faStar\faStar \\
+DOM XSS & XSS & \faStar \\
+XSS (stored) & XSS & \faStar\faStar\faStar \\
+Bonus Payload & XSS & \faStar\faStar\faStar \\
+Local File Read & XSS & \faStar\faStar\faStar\faStar \\
+Cross-Site Imaging & Sensitive Data & \faStar\faStar\faStar\faStar \\
+Blocked RCE DoS & Deserialization & \faStar\faStar\faStar\faStar \\
+Blocked RCE & Deserialization & \faStar\faStar\faStar\faStar\faStar \\
+Weird Crypto & Crypto & \faStar\faStar \\
+Forgotten Sales Backup & Sensitive Data & \faStar\faStar\faStar \\
+Deprecated Interface & Injection & \faStar\faStar\faStar \\
+Missing Security Headers & Misconfiguration & \faStar\faStar \\
+CORS Misconfiguration & Misconfiguration & \faStar\faStar\faStar \\
+Payback Time & Business Logic & \faStar\faStar\faStar \\
+Coupon Issue & Business Logic & \faStar\faStar \\
+Easter Egg Access & Sensitive Data & \faStar\faStar \\
+Extra Language & Validation & \faStar\faStar \\
+GDPR Data Erasure & Access Control & \faStar\faStar \\
+GDPR Data Theft & Access Control & \faStar\faStar \\
+\bottomrule
+\end{longtable}
+}
+
+% =========================================================
+\section{Categoría: Injection}
+
+\begin{teoria}[Inyección (OWASP A03)]
+Las fallas de inyección ocurren cuando los datos del usuario se envían al intérprete (SQL, NoSQL, OS) como parte de un comando. El atacante engaña al intérprete para ejecutar comandos no deseados. En Juice Shop hay inyecciones \textbf{SQL} (SQLite) y \textbf{NoSQL}.
+\end{teoria}
+
+\begin{desafio}[Login Admin \hfill \faStar]
+\textbf{Objetivo:} Iniciar sesión como administrador sin conocer su contraseña.
+\begin{pista}
+El campo de email no sanitiza la entrada. Probá una tautología SQL.
+\end{pista}
+\begin{solucion}
+En el campo \textbf{Email} ingresá una inyección que haga la condición siempre verdadera:
+\begin{lstlisting}
+' OR 1=1 --
+\end{lstlisting}
+En \textbf{Password} poné cualquier valor. La consulta resultante queda:
+\begin{lstlisting}[language=SQL]
+SELECT * FROM Users WHERE email = '' OR 1=1 --' AND password = '...'
+\end{lstlisting}
+Como \texttt{1=1} siempre es verdadero, devuelve al primer usuario (el admin).
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Login Jim \hfill \faStar\faStar]
+\textbf{Objetivo:} Iniciar sesión como Jim.
+\begin{solucion}
+Similar al anterior, pero dirigido al usuario Jim. Usá:
+\begin{lstlisting}
+jim@juice-sh.op' OR 1=1 --
+\end{lstlisting}
+Si conocés el email exacto, también podés usar \texttt{'} para romper la consulta y comentar el resto.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Login Bender \hfill \faStar\faStar]
+\textbf{Objetivo:} Iniciar sesión como Bender.
+\begin{solucion}
+Misma técnica dirigida a Bender:
+\begin{lstlisting}
+bender@juice-sh.op' OR 1=1 --
+\end{lstlisting}
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Login Amy \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Iniciar sesión como Amy.
+\begin{solucion}
+Amy usa un email poco común. Podés resolverlo por SQLi:
+\begin{lstlisting}
+amy@juice-sh.op' OR 1=1 --
+\end{lstlisting}
+O investigar el email correcto (a veces es \texttt{amy@juice-sh.op} o una variante). Si la inyección directa falla, combiná con \texttt{UNION} o fuerza bruta ligera.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Database Schema \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Obtener el esquema completo de la base de datos.
+\begin{pista}
+Usá una consulta \texttt{UNION SELECT} para leer las tablas de \texttt{sqlite\_master}.
+\end{pista}
+\begin{solucion}
+SQLite guarda el esquema en la tabla \texttt{sqlite\_master}. Inyectá un \texttt{UNION} que devuelva esa información. En un campo vulnerable (por ejemplo, la búsqueda de productos o el filtro):
+\begin{lstlisting}
+qwert' UNION SELECT sql FROM sqlite_master --
+\end{lstlisting}
+Esto lista las sentencias \texttt{CREATE TABLE} de toda la BD, revelando el esquema.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Forged Feedback \hfill \faStar\faStar]
+\textbf{Objetivo:} Enviar un feedback haciéndote pasar por otro usuario.
+\begin{solucion}
+\begin{enumerate}[leftmargin=*]
+  \item Escribí un feedback normal y envialo.
+  \item Interceptá la petición POST a \texttt{/api/Feedbacks/} con Burp.
+  \item Verás un JSON con un campo \texttt{UserId}. Cambialo al ID de otro usuario (ej. \texttt{1}).
+  \item Reenviá. El feedback quedará registrado a nombre de ese usuario.
+\end{enumerate}
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Forged Review \hfill \faStar\faStar]
+\textbf{Objetivo:} Editar un review que no te pertenece.
+\begin{solucion}
+\begin{enumerate}[leftmargin=*]
+  \item Creá un review propio en cualquier producto.
+  \item Con Burp, capturá el PUT a \texttt{/api/Reviews/<id>}.
+  \item Modificá el campo \texttt{message} y/o \texttt{author} para alterar un review ajeno.
+  \item Alternativamente, cambiá el \texttt{id} del review en la URL para editar el de otro usuario.
+\end{enumerate}
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Product Tampering \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Cambiar el precio de un producto.
+\begin{solucion}
+\begin{enumerate}[leftmargin=*]
+  \item Interceptá con Burp la actualización de un producto (PUT a \texttt{/api/Products/<id>}).
+  \item Modificá el campo \texttt{price} a un valor mucho menor (ej. \texttt{0.01}).
+  \item Reenviá. Si la API no valida permisos de escritura, el precio cambia.
+\end{enumerate}
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[NoSQL DoS \hfill \faStar\faStar\faStar\faStar]
+\textbf{Objetivo:} Provocar una denegación de servicio vía consulta NoSQL costosa.
+\begin{solucion}
+No ejecutes una prueba de agotamiento de recursos en una instancia compartida. Para documentar el desafío, identificá en el código o en el Score Board el endpoint vulnerable, describí el operador o la consulta que permite el consumo excesivo y verificá únicamente que la aplicación rechaza entradas fuera de los límites esperados. Si la práctica exige una demostración, usá un límite de tiempo y una copia descartable de la instancia, con autorización docente.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Mass Disparition \hfill \faStar\faStar\faStar\faStar\faStar]
+\textbf{Objetivo:} Eliminar todos los productos del catálogo.
+\begin{solucion}
+Este es uno de los más difíciles. Requiere encontrar el endpoint de borrado y enviar una petición que elimine en masa (por ejemplo, un DELETE sin filtro o un comando que borre la colección). Buscá en el código JS del cliente referencias a rutas de borrado de productos y replicá la llamada con Burp, ampliando el alcance del filtro.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Deprecated Interface \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Usar una interfaz/API obsoleta pero aún funcional.
+\begin{solucion}
+Buscá en el código JS referencias a endpoints antiguos (a menudo relacionados con el sistema B2B o una versión previa de la API). Navegá a esa ruta oculta o enviala una petición directa. Suelen estar en \texttt{/b2b} o endpoints no enlazados en la UI.
+\end{solucion}
+\end{desafio}
+
+% =========================================================
+\section{Categoría: Cross-Site Scripting (XSS)}
+
+\begin{teoria}[XSS (OWASP A03)]
+El XSS permite inyectar scripts que se ejecutan en el navegador de la víctima. Tipos: \textbf{Reflejado} (en la respuesta), \textbf{Almacenado} (guardado en BD) y \textbf{DOM} (manipulación del DOM por JavaScript del cliente).
+\end{teoria}
+
+\begin{desafio}[Client-side XSS Protection \hfill \faStar]
+\textbf{Objetivo:} Demostrar que el filtro XSS del cliente puede eludirse.
+\begin{solucion}
+El filtro XSS del lado del cliente puede desactivarse o eludirse. En la búsqueda, ingresá un payload que el filtro no detecte, por ejemplo usando codificación o etiquetas alternativas:
+\begin{lstlisting}
+<iframe src="javascript:alert(`xss`)">
+\end{lstlisting}
+Si el filtro bloquea \texttt{<script>}, usá \texttt{<iframe>}, \texttt{<svg onload>} o \texttt{<img onerror>}.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[DOM XSS \hfill \faStar]
+\textbf{Objetivo:} Ejecutar JavaScript mediante manipulación del DOM.
+\begin{solucion}
+En la barra de búsqueda, el término se refleja en el DOM. Inyectá:
+\begin{lstlisting}
+<iframe src="javascript:alert(`xss`)">
+\end{lstlisting}
+Angular renderiza el contenido y ejecuta el script. También funciona:
+\begin{lstlisting}
+<script>alert("xss")</script>
+\end{lstlisting}
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Zero Stars \hfill \faStar]
+\textbf{Objetivo:} Enviar un review con 0 estrellas (la UI no lo permite).
+\begin{solucion}
+\begin{enumerate}[leftmargin=*]
+  \item Escribí un review y seleccioná 1 estrella.
+  \item Interceptá la petición con Burp.
+  \item Cambiá el valor de \texttt{rating} (o \texttt{stars}) a \texttt{0}.
+  \item Reenviá.
+\end{enumerate}
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Bonus Payload \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Ejecutar un payload XSS específico requerido por el desafío.
+\begin{solucion}
+El Score Board muestra el payload exacto esperado (suele ser un \texttt{alert} con un string concreto o una llamada a una función específica). Leé el hint del desafío en el Score Board y replicá el payload indicado en el campo vulnerable (búsqueda o feedback).
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Local File Read \hfill \faStar\faStar\faStar\faStar]
+\textbf{Objetivo:} Leer un archivo local del servidor a través de XSS.
+\begin{solucion}
+Combiná un XSS con una ruta que permita leer archivos (path traversal). Un payload típico usa un iframe o fetch apuntando a un endpoint vulnerable:
+\begin{lstlisting}
+<iframe src="file:///etc/passwd"></iframe>
+\end{lstlisting}
+O aprovechá un endpoint que sirva archivos sin validar la ruta.
+\end{solucion}
+\end{desafio}
+
+% =========================================================
+\section{Categoría: Broken Access Control}
+
+\begin{teoria}[Control de Acceso Roto (OWASP A01)]
+Los usuarios pueden actuar fuera de sus permisos: ver datos ajenos, editar recursos de otros, acceder a funciones administrativas. Es la categoría \#1 del OWASP Top 10.
+\end{teoria}
+
+\begin{desafio}[Confidential Document \hfill \faStar]
+\textbf{Objetivo:} Acceder a un documento confidencial no público.
+\begin{solucion}
+\begin{enumerate}[leftmargin=*]
+  \item Buscá en el código JS (o en \texttt{robots.txt}) referencias a directorios ocultos. Encontrarás \texttt{/ftp}.
+  \item Navegá a \url{http://localhost:3000/ftp}.
+  \item Verás una lista de archivos. Los \texttt{.md} están protegidos por extensión.
+  \item Para descargar un archivo restringido, usá la variante exacta indicada por el Score Board. En versiones que conservan este desafío, la ruta se construye así:
+  \begin{lstlisting}
+http://localhost:3000/ftp/acquisitions.md%2500.md
+  \end{lstlisting}
+  \item El documento confidencial suele ser \texttt{acquisitions.md}.
+\end{enumerate}
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Basket Access \hfill \faStar\faStar]
+\textbf{Objetivo:} Acceder al carrito de compras de otro usuario.
+\begin{solucion}
+\begin{enumerate}[leftmargin=*]
+  \item Iniciá sesión y andá a tu carrito.
+  \item Interceptá la petición GET. La API es del tipo \texttt{/rest/basket/1} (donde \texttt{1} es tu ID).
+  \item Cambiá el ID a \texttt{2}, \texttt{3}, etc., y reenviá.
+  \item El servidor no valida si sos el dueño del basket y devuelve los datos ajenos.
+\end{enumerate}
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Manipulate Basket \hfill \faStar\faStar]
+\textbf{Objetivo:} Manipular el contenido del carrito (agregar productos sin pagar o con descuento).
+\begin{solucion}
+Interceptá las peticiones POST/PUT al basket. Podés agregar productos con cantidad negativa o precio modificado, o cambiar el ID del producto por uno más caro sin ajustar el precio.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Admin Registration \hfill \faStar\faStar]
+\textbf{Objetivo:} Registrarte como usuario con rol de administrador.
+\begin{solucion}
+\begin{enumerate}[leftmargin=*]
+  \item Andá al formulario de registro.
+  \item Interceptá la petición POST a \texttt{/api/Users/} con Burp.
+  \item Agregá el campo \texttt{role} con valor \texttt{admin} en el JSON:
+  \begin{lstlisting}
+{"email":"mio@test.com","password":"...", "role":"admin"}
+  \end{lstlisting}
+  \item Reenviá. Tu usuario queda creado con privilegios de administrador.
+\end{enumerate}
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[User Credentials \hfill \faStar\faStar]
+\textbf{Objetivo:} Obtener las credenciales de un usuario.
+\begin{solucion}
+Combiná técnicas de información: revisá respuestas de la API que filtren datos, o explotá el login con SQLi para extraer el hash/contraseña. También podés encontrar credenciales en archivos de respaldo expuestos (ver \textit{Confidential Document}).
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[GDPR Data Erasure / Theft \hfill \faStar\faStar]
+\textbf{Objetivo:} Acceder o manipular datos personales invocando el endpoint de privacidad.
+\begin{solucion}
+Buscá el endpoint relacionado con GDPR/privacidad de datos en el código JS. Permite leer o solicitar borrado de datos de usuario. Manipulá el ID del usuario objetivo para acceder a datos ajenos.
+\end{solucion}
+\end{desafio}
+
+% =========================================================
+\section{Categoría: Broken Authentication}
+
+\begin{teoria}[Autenticación Rota (OWASP A07)]
+Fallas en la gestión de identidad y sesión: contraseñas débiles, JWT mal implementados, recuperación de contraseñas vulnerable, falta de MFA.
+\end{teoria}
+
+\begin{desafio}[Password Strength \hfill \faStar\faStar]
+\textbf{Objetivo:} Registrarte con una contraseña extremadamente débil.
+\begin{solucion}
+El formulario exige cierta complejidad, pero podés bypasearlo interceptando la petición con Burp y enviando una contraseña como \texttt{1} o \texttt{a} directamente al servidor, que no valida la política del lado del servidor.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Security Answer \hfill \faStar\faStar]
+\textbf{Objetivo:} Descubrir la respuesta de seguridad de un usuario.
+\begin{solucion}
+La pregunta de seguridad suele tener una respuesta deducible u obtenible vía OSINT dentro de la app. Revisá perfiles, reviews o datos filtrados del usuario objetivo para inferir la respuesta (ej. nombre de mascota, ciudad natal).
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Reset Jim's Password \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Resetear la contraseña de Jim usando la pregunta de seguridad.
+\begin{solucion}
+Usá la función «Olvidé mi contraseña» con el email de Jim. Respondé la pregunta de seguridad con la información que investigaste (OSINT en la app). Una vez correcta, establecé una nueva contraseña.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Reset Bender's Password \hfill \faStar\faStar\faStar\faStar]
+\textbf{Objetivo:} Resetear la contraseña de Bender.
+\begin{solucion}
+Similar al anterior, pero la respuesta requiere investigar más a fondo la información de Bender (a menudo relacionada con referencias de la serie Futurama). Puede implicar encontrar datos ocultos en su perfil o en documentos filtrados.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Two Factor Authentication \hfill \faStar\faStar\faStar\faStar]
+\textbf{Objetivo:} Eludir o resolver el flujo de autenticación de dos factores.
+\begin{solucion}
+Este desafío suele requerir interceptar el flujo de 2FA y manipular el token, o encontrar la semilla/secret para generar códigos válidos. Revisá cómo la app genera y valida el OTP; si el secret está expuesto, podés generar códigos válidos con una herramienta TOTP.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[JWT Issues \hfill \faStar\faStar]
+\textbf{Objetivo:} Identificar y explotar fallas en la implementación de JWT.
+\begin{solucion}
+\begin{enumerate}[leftmargin=*]
+  \item Iniciá sesión y copiá el token de la cookie \texttt{token} o la cabecera \texttt{Authorization}.
+  \item Pegalo en \url{https://jwt.io}.
+  \item Inspeccioná el \textbf{header} y el \textbf{payload}.
+  \item Intentá modificar el \texttt{email} en el payload por el de otro usuario.
+\end{enumerate}
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[JWT Unsigned (alg: none) \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Forjar un token cambiando el algoritmo a \texttt{none}.
+\begin{solucion}
+\begin{enumerate}[leftmargin=*]
+  \item En jwt.io, cambiá el header: \texttt{"alg": "none"}.
+  \item Modificá el payload (ej. \texttt{email} a \texttt{admin@juice-sh.op}).
+  \item Borrá la firma (dejala vacía).
+  \item Usá este token para autenticarte. Si el servidor acepta \texttt{none}, quedás como admin.
+\end{enumerate}
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Forged Signed JWT \hfill \faStar\faStar\faStar\faStar]
+\textbf{Objetivo:} Forjar un JWT firmado válido.
+\begin{solucion}
+Requerís encontrar la \textbf{clave secreta} usada para firmar. Suele estar hardcodeada en el código fuente o filtrada en algún archivo. Una vez hallada, firmás el token modificado con esa clave (por ejemplo, con la librería \texttt{jsonwebtoken} de Node o \url{jwt.io}).
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Login Support Team \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Acceder como el equipo de soporte.
+\begin{solucion}
+Combiná OSINT para descubrir el email del equipo de soporte y explotá una falla de autenticación (SQLi, pregunta de seguridad débil o JWT) para ingresar.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Login CISO \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Iniciar sesión como el CISO.
+\begin{solucion}
+El CISO es un usuario de alto nivel. Usualmente se accede investigando su email y aplicando las mismas técnicas de autenticación (reset de contraseña vía pregunta de seguridad, o JWT forjado).
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Login MC SafeSearch \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Iniciar sesión como MC SafeSearch.
+\begin{solucion}
+MC SafeSearch es un personaje oculto. Su contraseña es una referencia cultural (a menudo ligada a una canción o meme). Buscá pistas en el código fuente, documentos ocultos o el archivo de letra asociado. También podés intentar fuerza bruta con un diccionario temático.
+\end{solucion}
+\end{desafio}
+
+% =========================================================
+\section{Categoría: Sensitive Data Exposure}
+
+\begin{teoria}[Exposición de Datos Sensibles (OWASP A02)]
+Datos protegidos expuestos por falta de cifrado, archivos de respaldo accesibles, logs públicos, o respuestas de API que filtran información.
+\end{teoria}
+
+\begin{desafio}[Exposed Metrics \hfill \faStar]
+\textbf{Objetivo:} Acceder a métricas internas expuestas.
+\begin{solucion}
+Buscá el endpoint de métricas, comúnmente \texttt{/metrics} o \texttt{/api/Metrics}. Suele exponer datos operativos del servidor (memoria, usuarios, contadores).
+\begin{lstlisting}
+http://localhost:3000/metrics
+\end{lstlisting}
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Easter Egg \hfill \faStar\faStar]
+\textbf{Objetivo:} Encontrar el huevo de pascua oculto.
+\begin{solucion}
+Buscá en el código JS una referencia a un archivo o ruta especial (a menudo \texttt{easter.egg}). Podés encontrarlo inspeccionando las rutas de la app o accediendo a un directorio oculto.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Leaked Unsafe Product \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Descubrir un producto «inseguro» oculto en el catálogo.
+\begin{solucion}
+Consultá la API de productos directamente:
+\begin{lstlisting}
+http://localhost:3000/api/Products
+\end{lstlisting}
+Buscá entre los resultados un producto que no aparece en la UI pero sí en la respuesta de la API (suele tener un nombre o descripción llamativa).
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Leaked Access Logs \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Acceder a los logs de acceso del servidor.
+\begin{solucion}
+Buscá archivos de log expuestos (ej. \texttt{access.log}) en directorios como \texttt{/ftp} o rutas estáticas. Los logs suelen revelar IPs, usuarios y peticiones, incluyendo credenciales en texto plano.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Access Log \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Leer el registro de accesos.
+\begin{solucion}
+Similar al anterior; accedé al archivo de log mediante una ruta directa o vía un \textit{Local File Read}. La información puede usarse para descubrir otros usuarios o rutas.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Missing Encoding \hfill \faStar\faStar]
+\textbf{Objetivo:} Explotar la falta de codificación de caracteres.
+\begin{solucion}
+Encontrá un input que no codifica correctamente caracteres especiales. Inyectá caracteres que rompan el formato (comillas, saltos de línea, HTML) para demostrar la falla (por ejemplo, alterando la estructura de un documento o respuesta).
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Forgotten Sales Backup \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Encontrar un archivo de respaldo olvidado.
+\begin{solucion}
+Buscá archivos de backup (extensiones \texttt{.bak}, \texttt{.old}, \texttt{.zip}) en directorios web o en \texttt{/ftp}. Suelen contener datos de ventas o configuración sensible.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Cross-Site Imaging \hfill \faStar\faStar\faStar\faStar]
+\textbf{Objetivo:} Extraer información mediante imágenes referenciadas entre sitios.
+\begin{solucion}
+Este desafío avanzado combina técnicas para «leer» datos a través de imágenes que cambian según el estado del servidor. Implica analizar cómo la app genera imágenes dinámicas y usarlas para exfiltrar información.
+\end{solucion}
+\end{desafio}
+
+% =========================================================
+\section{Categoría: XXE (XML External Entities)}
+
+\begin{teoria}[XXE (OWASP A05)]
+Cuando una aplicación procesa XML sin deshabilitar las entidades externas, un atacante puede incluir entidades que leen archivos locales o realizan peticiones SSRF.
+\end{teoria}
+
+\begin{desafio}[XXE Data Exfiltration \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Leer un archivo del servidor vía XXE.
+\begin{solucion}
+En la función de subida de archivos (o donde se procese XML), subí un archivo con este contenido:
+\begin{lstlisting}[language=XML]
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE foo [
+  <!ENTITY xxe SYSTEM "file:///etc/passwd">
+]>
+<foo>&xxe;</foo>
+\end{lstlisting}
+El servidor incluirá el contenido de \texttt{/etc/passwd} en la respuesta.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[XXE DoS \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Provocar denegación de servicio con XXE.
+\begin{solucion}
+No envíes una bomba XML a una instancia de uso compartido. Documentá el riesgo revisando si el parser permite entidades externas o expansiones recursivas, comprobá que la configuración las rechaza y registrá el límite de tamaño o tiempo aplicado. Una demostración controlada requiere una copia descartable, límites estrictos y autorización docente.
+\end{solucion}
+\end{desafio}
+
+% =========================================================
+\section{Categoría: Security Misconfiguration}
+
+\begin{teoria}[Configuración Errónea (OWASP A05)]
+Sistemas mal configurados: cabeceras de seguridad ausentes, CORS permisivo, manejo de errores que revela información, interfaces obsoletas activas.
+\end{teoria}
+
+\begin{desafio}[Error Handling \hfill \faStar]
+\textbf{Objetivo:} Provocar un error que revele información.
+\begin{solucion}
+Forzá un error en la aplicación, por ejemplo solicitando un recurso inexistente o un ID inválido en la API:
+\begin{lstlisting}
+http://localhost:3000/api/Products/99999
+\end{lstlisting}
+La respuesta de error suele revelar detalles internos (stack trace, versión del framework).
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Missing Security Headers \hfill \faStar\faStar]
+\textbf{Objetivo:} Identificar cabeceras de seguridad faltantes.
+\begin{solucion}
+Inspectá las cabeceras de respuesta con Burp o las DevTools. Verificá la ausencia de cabeceras como:
+\begin{itemize}[leftmargin=*]
+  \item \texttt{Content-Security-Policy}
+  \item \texttt{X-Content-Type-Options}
+  \item \texttt{X-Frame-Options}
+  \item \texttt{Strict-Transport-Security}
+\end{itemize}
+Documentá cuáles faltan y su impacto.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[CORS Misconfiguration \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Explotar una política CORS permisiva.
+\begin{solucion}
+Enviá una petición con la cabecera \texttt{Origin} de un dominio arbitrario y observá si la respuesta incluye \texttt{Access-Control-Allow-Origin} reflejando ese dominio. Si lo hace, la configuración CORS es insegura y permite peticiones cruzadas no autorizadas.
+\begin{lstlisting}
+curl -H "Origin: http://evil.com" -I http://localhost:3000/api/Users/
+\end{lstlisting}
+\end{solucion}
+\end{desafio}
+
+% =========================================================
+\section{Categoría: Business Logic}
+
+\begin{teoria}[Lógica de Negocio]
+Fallas en el flujo de negocio que permiten acciones no previstas: cupones con descuento excesivo, comprar sin pagar, manipular pedidos.
+\end{teoria}
+
+\begin{desafio}[Forged Coupon \hfill \faStar\faStar\faStar\faStar]
+\textbf{Objetivo:} Usar un cupón con descuento $\geq$ 80\%.
+\begin{solucion}
+Los cupones válidos siguen un patrón basado en el mes/año actual. El desafío requiere forjar un cupón con descuento mayor al permitido (80\%+).
+\begin{enumerate}[leftmargin=*]
+  \item Interceptá la aplicación del cupón en el checkout.
+  \item Analizá el formato de los cupones válidos (suelen ser del tipo \texttt{MES+descuento}).
+  \item Generá un cupón con descuento 80 o superior y aplicalo.
+\end{enumerate}
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Coupon Issue \hfill \faStar\faStar]
+\textbf{Objetivo:} Resolver una inconsistencia en el sistema de cupones.
+\begin{solucion}
+Aplicá un cupón y observá el comportamiento. El desafío suele consistir en encontrar cómo un cupón puede reutilizarse o aplicarse incorrectamente, documentando la falla de lógica.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Christmas Special \hfill \faStar\faStar]
+\textbf{Objetivo:} Comprar un producto especial de temporada.
+\begin{solucion}
+Hay un producto navideño que normalmente no está disponible o requiere condiciones especiales. Buscá en la API el producto y forzalo al carrito, o encontrá la ruta oculta que lo vende.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Payback Time \hfill \faStar\faStar\faStar]
+\textbf{Objetivo:} Explotar el flujo de pago/devolución.
+\begin{solucion}
+Manipulá el proceso de pago o reembolso para obtener un resultado inconsistente (por ejemplo, un reembolso mayor al pago, o pagar con saldo negativo). Interceptá las peticiones del checkout.
+\end{solucion}
+\end{desafio}
+
+% =========================================================
+\section{Categoría: Improper Input Validation}
+
+\begin{desafio}[Upload Size \hfill \faStar\faStar]
+\textbf{Objetivo:} Subir un archivo que exceda el tamaño permitido.
+\begin{solucion}
+La validación de tamaño es solo del lado del cliente. Interceptá la subida con Burp y reemplazá el archivo por uno más grande, o modificá el tamaño declarado en la petición.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Upload Type \hfill \faStar\faStar]
+\textbf{Objetivo:} Subir un tipo de archivo no permitido.
+\begin{solucion}
+La restricción de extensión es del lado del cliente. Cambiá la extensión en la petición interceptada (ej. subir un \texttt{.exe} o \texttt{.php} aunque la UI solo permita imágenes). También podés usar doble extensión: \texttt{archivo.jpg.php}.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Extra Language \hfill \faStar\faStar]
+\textbf{Objetivo:} Agregar o acceder a un idioma no oficial.
+\begin{solucion}
+Manipulá el parámetro de idioma en la petición o la cookie para establecer un idioma que no está en el selector de la UI, forzando un valor no listado.
+\end{solucion}
+\end{desafio}
+
+% =========================================================
+\section{Categoría: Insecure Deserialization}
+
+\begin{desafio}[Blocked RCE \hfill \faStar\faStar\faStar\faStar]
+\textbf{Objetivo:} Ejecutar código remotamente a través de deserialización.
+\begin{solucion}
+Este desafío avanzado requiere encontrar un endpoint que deserializa datos sin validar y enviar un objeto malicioso. Juice Shop bloquea los payloads RCE conocidos, por lo que debés encontrar una variante que bypasee las protecciones.
+\end{solucion}
+\end{desafio}
+
+\begin{desafio}[Blocked RCE DoS \hfill \faStar\faStar\faStar\faStar]
+\textbf{Objetivo:} Provocar DoS mediante deserialización.
+\begin{solucion}
+Similar al anterior, pero el objetivo es causar denegación de servicio en lugar de ejecución de código. Enviá un payload de deserialización que consuma recursos excesivos.
+\end{solucion}
+\end{desafio}
+
+% =========================================================
+\section{Categoría: Cryptographic Issues}
+
+\begin{desafio}[Weird Crypto \hfill \faStar\faStar]
+\textbf{Objetivo:} Identificar el uso de un algoritmo criptográfico inusual o inseguro.
+\begin{solucion}
+Revisá el código fuente de la app (o las respuestas de la API) en busca de algoritmos no estándar o débiles. Documentá cuál es y por qué es inseguro.
+\end{solucion}
+\end{desafio}
+
+% =========================================================
+\section{Categoría: Documentation / Awareness}
+
+\begin{desafio}[Privacy Policy \hfill \faStar]
+\textbf{Objetivo:} Leer la política de privacidad.
+\begin{solucion}
+Navegá a la sección de política de privacidad de la tienda y leela (o simular su aceptación). Este desafío es de concientización.
+\end{solucion}
+\end{desafio}
+
+% =========================================================
+\section{Metodología de Trabajo Recomendada}
+
+\begin{clave}[Flujo de resolución]
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Explorá} la app como usuario normal (registrate, comprá, navegá).
+  \item \textbf{Abrí Burp Suite} y activá el proxy con FoxyProxy.
+  \item \textbf{Revisá el código JS} del cliente (F12 → Sources) buscando rutas, endpoints y secretos.
+  \item \textbf{Inspectá la API REST}: la mayoría de los desafíos pasan por \texttt{/api/} o \texttt{/rest/}.
+  \item \textbf{Manipulá} las peticiones con Burp Repeater.
+  \item \textbf{Documentá} cada hallazgo con capturas.
+\end{enumerate}
+\end{clave}
+
+\subsection{Checklist del Hacker Web}
+\begin{itemize}[leftmargin=*]
+  \item ¿Revisé \texttt{robots.txt} y \texttt{sitemap.xml}?
+  \item ¿Busqué directorios ocultos (\texttt{/ftp}, \texttt{/api-docs})?
+  \item ¿Inspecté las cookies y tokens (JWT)?
+  \item ¿Probé SQLi en todos los campos de entrada?
+  \item ¿Manipulé los IDs en las peticiones de la API (IDOR)?
+  \item ¿Revisé las cabeceras de seguridad?
+  \item ¿Busqué archivos de respaldo (\texttt{.bak}, \texttt{.old}, \texttt{.zip})?
+  \item ¿Probé XSS en búsquedas, reviews y feedback?
+\end{itemize}
+
+% =========================================================
+\section{Cheatsheet de Comandos Útiles}
+
+\begin{lstlisting}[language=bash]
+# Escaneo rapido de la app
+nmap -sV -p 3000 localhost
+
+# Buscar rutas y archivos comunes
+gobuster dir -u http://localhost:3000 -w common.txt
+
+# Escaneo web
+nikto -h http://localhost:3000
+
+# Consultar la API de productos
+curl http://localhost:3000/api/Products
+
+# Ver cabeceras de respuesta
+curl -I http://localhost:3000
+
+# Enviar una peticion con Origin custom (CORS)
+curl -H "Origin: http://evil.com" -I http://localhost:3000/api/Users/
+\end{lstlisting}
+
+% =========================================================
+\section{Fuentes y bibliografía}
+
+\subsection{Documentación oficial y libro de soluciones}
+\begin{itemize}[leftmargin=*]
+  \item OWASP Foundation. \textit{OWASP Juice Shop}: \url{https://owasp.org/www-project-juice-shop/}
+  \item Kimminich, B. \textit{Pwning OWASP Juice Shop Companion Guide}: \url{https://pwning.owasp-juice.shop/}
+  \item OWASP Foundation. \textit{OWASP Top 10:2021}: \url{https://owasp.org/www-project-top-ten/}
+  \item Repositorio oficial: \url{https://github.com/juice-shop/juice-shop}
+\end{itemize}
+
+\subsection{Bibliografía de la cátedra}
+\begin{itemize}[leftmargin=*]
+  \item Chicano Tejada, E. (2023). \textit{Auditoría de seguridad informática. IFCT0109} (2.ª ed.). IC Editorial --- eLibro.
+  \item Evans, L. (2019). \textit{Ethical Hacking: The Ultimate Guide to Using Penetration Testing to Audit and Improve the Cybersecurity of Computer Networks for Beginners}. Amazon Digital Services LLC --- KDP.
+  \item White, A. \& Clark, B. (2017). \textit{BTFM: Blue Team Field Manual}. CreateSpace.
+\end{itemize}
+
+\subsection{Herramientas}
+\begin{itemize}[leftmargin=*]
+  \item PortSwigger. \textit{Burp Suite}: \url{https://portswigger.net/burp}
+  \item JWT.io: \url{https://jwt.io/}
+  \item OWASP ZAP: \url{https://www.zaproxy.org/}
+\end{itemize}
+
+\end{document}

