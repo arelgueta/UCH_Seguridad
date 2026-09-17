@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^cd '/home/relgueta/Documentos/uch/ClasesCuadernillos/C8' && pdflatex -interaction=nonstopmode -halt-on-error CuadernilloClase08\\.tex$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

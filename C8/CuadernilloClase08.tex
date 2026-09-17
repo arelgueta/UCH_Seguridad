@@ -1,0 +1,566 @@
+% =========================================================
+%  CUADERNILLO DE ESTUDIO - CLASE 8
+%  Seguridad Aplicada a Sistemas de Información
+%  Compilar con: pdfLaTeX (Overleaf o TeX Live/MiKTeX)
+% =========================================================
+\documentclass[11pt,a4paper]{article}
+
+% ----------------- Paquetes -----------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{microtype}
+\usepackage{geometry}
+\geometry{left=2.4cm,right=2.4cm,top=2.6cm,bottom=2.6cm}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{listings}
+
+% ----------------- Colores institucionales -----------------
+\definecolor{azulmat}{RGB}{0,84,140}
+\definecolor{griscaja}{RGB}{245,245,245}
+\definecolor{verdesuave}{RGB}{232,244,232}
+\definecolor{naranjasuave}{RGB}{255,244,230}
+\definecolor{azulsuave}{RGB}{232,240,250}
+\definecolor{violetasuave}{RGB}{240,232,250}
+\definecolor{rojosuave}{RGB}{255,235,235}
+\definecolor{kaliblue}{RGB}{46,160,255}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=azulmat,
+  urlcolor=azulmat,
+  citecolor=azulmat
+}
+
+% ----------------- Estilo de código -----------------
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{griscaja},
+  frame=single,
+  breaklines=true,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{green!60!black},
+  stringstyle=\color{red},
+  showstringspaces=false,
+  numbers=left,
+  numberstyle=\tiny\color{gray}
+}
+
+% ----------------- Cajas de contenido -----------------
+\newtcolorbox{definicion}[1][Definición]{%
+  enhanced, breakable,
+  colback=azulsuave, colframe=azulmat,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{ejemplo}[1][Ejemplo]{%
+  enhanced, breakable,
+  colback=naranjasuave, colframe=orange!75!black,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{reflexion}[1][Para reflexionar]{%
+  enhanced, breakable,
+  colback=verdesuave, colframe=green!55!black,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{clave}[1][Idea clave]{%
+  enhanced, breakable,
+  colback=griscaja, colframe=black!70,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{respuesta}[1][Respuesta]{%
+  enhanced, breakable,
+  colback=violetasuave, colframe=violet!60!black,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{alerta}[1][Límite Ético / Legal]{%
+  enhanced, breakable,
+  colback=rojosuave, colframe=red!70!black,
+  fonttitle=\bfseries, title=#1
+}
+
+\newtcolorbox{herramienta}[1][Herramienta]{%
+  enhanced, breakable,
+  colback=blue!5, colframe=kaliblue,
+  fonttitle=\bfseries, title=#1
+}
+
+% ----------------- Encabezado y pie -----------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Seguridad Aplicada a Sistemas de Información}
+\fancyhead[R]{\small Cuadernillo de Estudio --- Clase 8}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ----------------- Formato de títulos -----------------
+\titleformat{\section}{\large\bfseries\color{azulmat}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{azulmat!80!black}}{\thesubsection.}{0.6em}{}
+
+% ----------------- Portada -----------------
+\title{%
+  \rule{\textwidth}{1pt}\\[0.4cm]
+  \textbf{\Large Cuadernillo de Estudio --- Clase 8}\\[0.2cm]
+  \large Identificación de Vulnerabilidades: De la Teoría al Caso Real\\[0.2cm]
+  \rule{\textwidth}{1pt}\\[0.4cm]
+  \normalsize Seguridad Aplicada a Sistemas de Información\\
+  Licenciatura en Sistemas de Información --- Facultad de Informática y Diseño\\
+  Docente: Ing.\ Rodrigo Atilio Elgueta\\[0.2cm]
+  \small Ciclo Académico Vigente
+}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\tableofcontents
+\newpage
+
+% =========================================================
+\section{Objetivos de aprendizaje}
+Al finalizar la lectura y el trabajo con este cuadernillo, el estudiante será capaz de:
+
+\begin{itemize}[leftmargin=*]
+  \item Definir formalmente el concepto de \textbf{vulnerabilidad} y diferenciarlo de amenaza, riesgo y exploit.
+  \item Clasificar vulnerabilidades según estándares internacionales (\textbf{CVE}, \textbf{CVSS}, \textbf{CWE}).
+  \item Identificar vulnerabilidades típicas en \textbf{componentes de infraestructura} (balanceadores, WAF, servidores web, bases de datos).
+  \item Analizar las \textbf{causas raíz} que generan vulnerabilidades en software, hardware, redes y comunicaciones.
+  \item Aplicar el conocimiento a un \textbf{caso real} integrando herramientas de diagnóstico vistas en la Actividad A06.
+  \item Preparar la \textbf{Actividad A07} (Informe de identificación de vulnerabilidades con revisión de caso).
+\end{itemize}
+
+\begin{clave}[Cómo usar este cuadernillo]
+Esta clase es la bisagra entre la teoría de herramientas (Clase 7) y la práctica de explotación (Clases 9-10). Aquí aprenderás a \textbf{identificar y documentar} vulnerabilidades antes de explotarlas. Las respuestas de la autoevaluación están en la Sección~\ref{sec:respuestas}.
+\end{clave}
+
+% =========================================================
+\section{Vulnerabilidades: Definición y Taxonomía}
+
+\subsection{Definición formal}
+\begin{definicion}[Vulnerabilidad]
+Debilidad o falla en el diseño, implementación, operación o gestión de un sistema que puede ser \textbf{explotada} por una amenaza para comprometer los activos de información.
+\end{definicion}
+
+\begin{definicion}[Exploit]
+Código, herramienta o técnica que \textbf{aprovecha} una vulnerabilidad específica para lograr un resultado no deseado (acceso no autorizado, ejecución de código, denegación de servicio).
+\end{definicion}
+
+\begin{definicion}[Riesgo de una vulnerabilidad]
+Combinación de la \textbf{probabilidad} de que la vulnerabilidad sea explotada y el \textbf{impacto} que dicha explotación tendría sobre los activos de la organización.
+\end{definicion}
+
+\begin{clave}[Relación entre conceptos]
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Vulnerabilidad} $\rightarrow$ La debilidad del sistema (el «agujero»).
+  \item \textbf{Exploit} $\rightarrow$ La herramienta que aprovecha esa debilidad (la «llave»).
+  \item \textbf{Riesgo} $\rightarrow$ La probabilidad de que alguien use esa llave y el daño que cause.
+  \item \textbf{Salvaguarda} $\rightarrow$ La medida que cierra o reduce el agujero.
+\end{itemize}
+\end{clave}
+
+\subsection{Estándares de clasificación}
+
+\begin{definicion}[CVE --- Common Vulnerabilities and Exposures]
+Catálogo público de vulnerabilidades conocidas mantenido por MITRE. Cada vulnerabilidad recibe un identificador único en formato \texttt{CVE-AÑO-NÚMERO} (ej. \texttt{CVE-2021-44228} para Log4Shell).
+\end{definicion}
+
+\begin{definicion}[CVSS --- Common Vulnerability Scoring System]
+Sistema de puntuación estándar (0 a 10) que mide la \textbf{severidad} de una vulnerabilidad considerando:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Vector de ataque:} ¿Es remota o requiere acceso local?
+  \item \textbf{Complejidad:} ¿Qué tan difícil es explotarla?
+  \item \textbf{Autenticación:} ¿Requiere credenciales?
+  \item \textbf{Impacto:} ¿Afecta confidencialidad, integridad y/o disponibilidad?
+\end{itemize}
+\end{definicion}
+
+\begin{definicion}[CWE --- Common Weakness Enumeration]
+Clasificación de \textbf{tipos de debilidades} de software (causas raíz). Por ejemplo:
+\begin{itemize}[leftmargin=*]
+  \item \texttt{CWE-89}: Inyección SQL
+  \item \texttt{CWE-79}: Cross-Site Scripting (XSS)
+  \item \texttt{CWE-287}: Autenticación inadecuada
+  \item \texttt{CWE-798}: Uso de credenciales hardcodeadas
+\end{itemize}
+\end{definicion}
+
+\subsection{Escala de severidad CVSS}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{0.8\textwidth}{@{} p{3cm} p{2cm} X @{}}
+\toprule
+\textbf{Severidad} & \textbf{CVSS} & \textbf{Acción recomendada} \\
+\midrule
+Crítica & 9.0 -- 10.0 & Corrección inmediata. Puede indicar explotación activa. \\
+Alta & 7.0 -- 8.9 & Corrección prioritaria en el próximo ciclo de parches. \\
+Media & 4.0 -- 6.9 & Planificar corrección según riesgo residual. \\
+Baja & 0.1 -- 3.9 & Monitorear y evaluar si aplica al contexto. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =========================================================
+\section{Vulnerabilidades en Componentes de Infraestructura}
+
+En la Unidad III vimos la seguridad lógica por capas del modelo OSI. Ahora profundizamos en los \textbf{componentes habituales} de una infraestructura web corporativa y sus vulnerabilidades típicas.
+
+\subsection{Arquitectura típica de una aplicación web}
+\begin{center}
+\texttt{Usuario} $\rightarrow$ \texttt{Balanceador} $\rightarrow$ \texttt{WAF} $\rightarrow$ \texttt{Web Server} $\rightarrow$ \texttt{App Server} $\rightarrow$ \texttt{Base de Datos}
+\end{center}
+
+\subsection{Balanceador de Carga}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Función:} Distribuir el tráfico entre múltiples servidores para garantizar disponibilidad.
+  \item \textbf{Vulnerabilidades típicas:}
+  \begin{itemize}
+    \item Configuración de session persistence débil (permite session hijacking).
+    \item Exposición de puertos de administración sin cifrado.
+    \item Falta de límites de tasa (rate limiting) que permite ataques DDoS.
+  \end{itemize}
+\end{itemize}
+
+\subsection{Terminador de Túneles SSL / Proxy Inverso}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Función:} Manejar el cifrado TLS, actuar como punto único de entrada.
+  \item \textbf{Vulnerabilidades típicas:}
+  \begin{itemize}
+    \item Certificados SSL/TLS desactualizados o con protocolos inseguros (SSLv3, TLS 1.0).
+    \item Configuraciones que permiten ataques de downgrade (POODLE, BEAST).
+    \item Heartbleed (\texttt{CVE-2014-0160}): vulnerabilidad en OpenSSL que permitía leer memoria del servidor.
+  \end{itemize}
+\end{itemize}
+
+\subsection{WAF (Web Application Firewall)}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Función:} Filtrar tráfico HTTP/HTTPS malicioso antes de llegar al servidor.
+  \item \textbf{Vulnerabilidades típicas:}
+  \begin{itemize}
+    \item Reglas mal configuradas (bypass de firmas).
+    \item Evasión mediante encoding múltiple o HTTP Parameter Pollution.
+    \item Falta de actualización de reglas para nuevas amenazas.
+  \end{itemize}
+\end{itemize}
+
+\subsection{Web Server / App Server}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Función:} Servir contenido estático (HTML, CSS) y ejecutar lógica de aplicación.
+  \item \textbf{Vulnerabilidades típicas:}
+  \begin{itemize}
+    \item Software desactualizado (Apache, Nginx, Tomcat, IIS).
+    \item Directorios expuestos sin autenticación.
+    \item Archivos de configuración con credenciales visibles.
+    \item Inyección de comandos del sistema operativo (OS Command Injection).
+  \end{itemize}
+\end{itemize}
+
+\subsection{Base de Datos}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Función:} Almacenar y gestionar los datos de la aplicación.
+  \item \textbf{Vulnerabilidades típicas:}
+  \begin{itemize}
+    \item Inyección SQL (\texttt{CWE-89}): manipulación de consultas.
+    \item Credenciales por defecto o hardcodeadas (\texttt{CWE-798}).
+    \item Puertos expuestos innecesariamente a Internet.
+    \item Falta de cifrado de datos en reposo.
+  \end{itemize}
+\end{itemize}
+
+\begin{ejemplo}[OWASP Top 10]
+El proyecto OWASP publica periódicamente las \textbf{10 vulnerabilidades más críticas} en aplicaciones web. Las más recurrentes incluyen:
+\begin{enumerate}[leftmargin=*]
+  \item Broken Access Control (Control de acceso roto)
+  \item Cryptographic Failures (Fallas criptográficas)
+  \item Injection (Inyección SQL, de comandos, etc.)
+  \item Insecure Design (Diseño inseguro)
+  \item Security Misconfiguration (Configuración errónea de seguridad)
+  \item Vulnerable and Outdated Components (Componentes desactualizados)
+  \item Identification and Authentication Failures (Fallas de identificación y autenticación)
+  \item Software and Data Integrity Failures (Fallas de integridad)
+  \item Security Logging and Monitoring Failures (Fallas en logs y monitoreo)
+  \item Server-Side Request Forgery (SSRF)
+\end{enumerate}
+\end{ejemplo}
+
+% =========================================================
+\section{Causas Raíz de las Vulnerabilidades}
+Las vulnerabilidades no aparecen por magia. Tienen causas identificables:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\textwidth}{@{} p{3.5cm} X X @{}}
+\toprule
+\textbf{Categoría} & \textbf{Causa típica} & \textbf{Ejemplo} \\
+\midrule
+\textbf{Diseño} & Falta de análisis de seguridad en la arquitectura & Sistema diseñado sin segmentación de red \\
+\midrule
+\textbf{Desarrollo} & Falta de validación de entradas, manejo inseguro de memoria & Buffer overflow, inyección SQL \\
+\midrule
+\textbf{Configuración} & Parámetros por defecto, servicios innecesarios habilitados & Puertos abiertos, usuarios default \\
+\midrule
+\textbf{Operación} & Falta de parches, actualizaciones no aplicadas & Vulnerabilidades conocidas sin parchar \\
+\midrule
+\textbf{Humanos} & Errores, ingeniería social, falta de capacitación & Caer en phishing, compartir credenciales \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =========================================================
+\section{Metodología de Identificación de Vulnerabilidades}
+Un pentester profesional sigue un proceso estructurado para identificar vulnerabilidades:
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Recopilación de información:} Identificar activos, tecnologías, versiones de software.
+  \item \textbf{Escaneo automatizado:} Usar herramientas como Nmap, Nikto, OpenVAS para detectar vulnerabilidades conocidas.
+  \item \textbf{Análisis manual:} Revisar configuraciones, código fuente, lógica de negocio.
+  \item \textbf{Verificación:} Confirmar que la vulnerabilidad es explotable (sin causar daño).
+  \item \textbf{Clasificación:} Asignar CVE, puntuación CVSS y prioridad.
+  \item \textbf{Documentación:} Redactar el informe con evidencia y recomendaciones.
+\end{enumerate}
+
+\begin{herramienta}[Integración con A06: Herramientas de Kali para identificación]
+En la Actividad A06 investigaste herramientas. Aquí te mostramos cómo se integran en el flujo de identificación:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Nmap:} Escaneo de puertos y detección de servicios/versiones.
+  \begin{lstlisting}[language=bash]
+nmap -sV -sC --script=vuln 192.168.1.0/24
+  \end{lstlisting}
+  \item \textbf{Nikto:} Escaneo de vulnerabilidades web conocidas.
+  \begin{lstlisting}[language=bash]
+nikto -h http://target.com -Tuning 1234567890
+  \end{lstlisting}
+  \item \textbf{OpenVAS (GVM):} Escáner de vulnerabilidades completo con reportes CVSS.
+  \item \textbf{Searchsploit:} Búsqueda offline de exploits para vulnerabilidades encontradas.
+  \begin{lstlisting}[language=bash]
+searchsploit apache 2.4.49
+  \end{lstlisting}
+\end{itemize}
+\end{herramienta}
+
+% =========================================================
+\section{Caso de Estudio para la Actividad A07}
+
+\begin{reflexion}[Caso: «El Portal de la Municipalidad»]
+La Municipalidad de \textit{Valle Grande} tiene un portal web institucional donde los ciudadanos consultan el estado de sus trámites. El portal fue desarrollado por una consultora externa y no se le realizan auditorías de seguridad desde su implementación.
+
+\textbf{Situación observada durante un análisis preliminar:}
+\begin{itemize}[leftmargin=*]
+  \item El servidor web corre \textbf{Apache 2.4.29} (desactualizado).
+  \item Existe un directorio \texttt{/admin} accesible sin autenticación.
+  \item El formulario de login envía credenciales por \textbf{HTTP plano} (sin HTTPS).
+  \item La base de datos MySQL está expuesta en el puerto 3306 hacia Internet.
+  \item El certificado SSL del sitio está vencido.
+  \item Se encontró un archivo \texttt{config.php.bak} con credenciales de BD visibles.
+  \item El servidor tiene habilitado el módulo \texttt{mod\_status} de Apache accesible públicamente.
+\end{itemize}
+
+\textbf{Consigna de A07:} Elaborar un informe profesional que:
+\begin{enumerate}
+  \item Identifique y clasifique cada vulnerabilidad (tipo CWE, severidad CVSS estimada).
+  \item Integre al menos una herramienta investigada en A06 para demostrar cómo se detectaría cada hallazgo.
+  \item Proponga salvaguardas técnicas y administrativas.
+  \item Evalúe el riesgo residual tras la aplicación de las salvaguardas.
+\end{enumerate}
+\end{reflexion}
+
+% =========================================================
+\section{Glosario de conceptos clave}
+\begin{description}[leftmargin=!, labelwidth=3.5cm, font=\bfseries]
+  \item[Vulnerabilidad] Debilidad explotable en un sistema.
+  \item[Exploit] Código o técnica que aprovecha una vulnerabilidad.
+  \item[CVE] Identificador único de vulnerabilidad (MITRE).
+  \item[CVSS] Puntuación estándar de severidad (0-10).
+  \item[CWE] Clasificación de tipos de debilidades de software.
+  \item[OWASP Top 10] Ranking de vulnerabilidades web más críticas.
+  \item[Zero-day] Vulnerabilidad desconocida para la que no existe parche.
+  \item[Pentesting] Prueba de penetración autorizada.
+  \item[Hardening] Proceso de reducir la superficie de ataque.
+  \item[Parche] Actualización que corrige una vulnerabilidad.
+  \item[Falso positivo] Alerta de vulnerabilidad que no es real.
+  \item[WAF] Firewall de aplicación web.
+\end{description}
+
+% =========================================================
+\section{Autoevaluación}\label{sec:autoeval}
+Respondé por escrito; luego verificá en la Sección~\ref{sec:respuestas}.
+
+\begin{enumerate}[leftmargin=*]
+  \item Diferenciá \textbf{vulnerabilidad}, \textbf{exploit} y \textbf{riesgo} con un ejemplo original.
+  \item ¿Qué significan las siglas \textbf{CVE}, \textbf{CVSS} y \textbf{CWE}? ¿En qué se diferencian?
+  \item Elegí \textbf{dos componentes} de la infraestructura web (balanceador, WAF, servidor web, BD) y para cada uno identificá una vulnerabilidad típica y una salvaguarda.
+  \item En el caso de estudio de la Municipalidad, ¿cuál vulnerabilidad considerás \textbf{la más crítica} y por qué? Justificá usando la Tríada CIA.
+  \item ¿Qué herramienta de las vistas en A06 usarías para detectar que el servidor Apache está desactualizado? Describí el comando.
+\end{enumerate}
+
+% =========================================================
+\section{Respuestas de la Autoevaluación}\label{sec:respuestas}
+
+\begin{clave}[Nota para el estudiante]
+Estas respuestas son de referencia. Se valora la precisión técnica, el uso correcto de terminología y la capacidad de justificar con la Tríada CIA.
+\end{clave}
+
+\subsection*{Pregunta 1: Vulnerabilidad vs. Exploit vs. Riesgo}
+\begin{respuesta}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Vulnerabilidad:} Una ventana rota en una casa. Es la debilidad.
+  \item \textbf{Exploit:} Un ladrón que sabe cómo entrar por esa ventana rota. Es la herramienta/técnica que aprovecha la debilidad.
+  \item \textbf{Riesgo:} La probabilidad de que un ladrón entre por esa ventana $\times$ el valor de lo que robaría. Es la combinación de probabilidad e impacto.
+\end{itemize}
+
+\textbf{Ejemplo técnico:}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Vulnerabilidad:} El servidor web usa una versión de Apache con una falla conocida de path traversal (\texttt{CVE-2021-41773}).
+  \item \textbf{Exploit:} Un script Python que envía una petición HTTP especialmente construida para leer archivos fuera del directorio web.
+  \item \textbf{Riesgo:} Alta probabilidad (el exploit es público y fácil de usar) $\times$ Alto impacto (puede leer archivos de configuración con credenciales de BD).
+\end{itemize}
+\end{respuesta}
+
+\subsection*{Pregunta 2: CVE, CVSS, CWE}
+\begin{respuesta}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{CVE (Common Vulnerabilities and Exposures):} Es un \textbf{identificador único} para cada vulnerabilidad conocida. Es como el «DNI» de la vulnerabilidad. Formato: \texttt{CVE-AÑO-NÚMERO}. No mide severidad, solo identifica.
+  \item \textbf{CVSS (Common Vulnerability Scoring System):} Es una \textbf{puntuación numérica} (0-10) que mide la \textbf{severidad} de una vulnerabilidad. Considera vector de ataque, complejidad, autenticación e impacto en C/I/A. No identifica, mide gravedad.
+  \item \textbf{CWE (Common Weakness Enumeration):} Es una \textbf{clasificación por tipo} de debilidad (causa raíz). Agrupa vulnerabilidades similares por su naturaleza (ej. «todas las inyecciones SQL» son \texttt{CWE-89}). No identifica una vulnerabilidad específica, clasifica su categoría.
+\end{itemize}
+
+\textbf{Diferencia clave:} CVE identifica, CVSS mide gravedad, CWE clasifica por tipo de causa.
+\end{respuesta}
+
+\subsection*{Pregunta 3: Vulnerabilidades en componentes de infraestructura}
+\begin{respuesta}
+\textbf{Componente 1: Base de Datos}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Vulnerabilidad típica:} Inyección SQL (\texttt{CWE-89}). La aplicación no valida las entradas del usuario y permite ejecutar consultas SQL arbitrarias.
+  \item \textbf{Salvaguarda:} Usar \textbf{consultas parametrizadas} (prepared statements) en el código de la aplicación. Implementar un WAF como capa adicional de defensa. Aplicar el principio de menor privilegio en las cuentas de BD.
+\end{itemize}
+
+\textbf{Componente 2: Servidor Web}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Vulnerabilidad típica:} Software desactualizado con CVEs conocidos sin parchar. Por ejemplo, Apache 2.4.29 con vulnerabilidades publicadas.
+  \item \textbf{Salvaguarda:} Implementar un \textbf{programa de gestión de parches} con actualizaciones automáticas. Usar herramientas de escaneo continuo para detectar software vulnerable. Aplicar hardening del servidor (desactivar módulos innecesarios).
+\end{itemize}
+\end{respuesta}
+
+\subsection*{Pregunta 4: Vulnerabilidad más crítica del caso Municipalidad}
+\begin{respuesta}
+La vulnerabilidad más crítica es el \textbf{archivo \texttt{config.php.bak} con credenciales de BD visibles}, porque:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Confidencialidad:} Expone credenciales que permiten acceso total a la base de datos (datos de ciudadanos).
+  \item \textbf{Integridad:} Con las credenciales, un atacante puede modificar o eliminar registros.
+  \item \textbf{Disponibilidad:} Puede eliminar toda la base de datos.
+\end{itemize}
+
+Aunque otras vulnerabilidades son graves (Apache desactualizado, MySQL expuesto), el archivo de backup con credenciales es un \textbf{acceso directo sin barreras}: no requiere explotar una vulnerabilidad técnica compleja, solo descargar un archivo. Es un error humano/administrativo con impacto catastrófico inmediato.
+
+\textbf{CVSS estimado:} 9.8 (Crítico) --- Vector de ataque: Red, Complejidad: Baja, Autenticación: Ninguna, Impacto: Alto en C/I/A.
+\end{respuesta}
+
+\subsection*{Pregunta 5: Herramienta para detectar Apache desactualizado}
+\begin{respuesta}
+La herramienta más directa es \textbf{Nmap} con el flag de detección de servicios y scripts de vulnerabilidades:
+
+\begin{lstlisting}[language=bash]
+nmap -sV -sC --script=vuln -p 80,443 target.com
+\end{lstlisting}
+
+\textbf{Explicación:}
+\begin{itemize}[leftmargin=*]
+  \item \texttt{-sV}: Detecta la versión del servicio (en este caso, reportará «Apache 2.4.29»).
+  \item \texttt{-sC}: Ejecuta scripts por defecto de Nmap.
+  \item \texttt{--script=vuln}: Ejecuta todos los scripts de la categoría «vulnerabilidad», que incluyen detección de CVEs conocidos para la versión detectada.
+  \item \texttt{-p 80,443}: Escanea solo los puertos web.
+\end{itemize}
+
+Alternativamente, \textbf{Nikto} también detecta software desactualizado:
+\begin{lstlisting}[language=bash]
+nikto -h http://target.com
+\end{lstlisting}
+Nikto reportará: «El servidor web está desactualizado: Apache/2.4.29» y listará los CVEs asociados.
+\end{respuesta}
+
+% =========================================================
+\section{Actividad A07: Identificación de Vulnerabilidades}
+
+\begin{clave}[Consigna A07 --- Identificación de Vulnerabilidades: Revisión de Caso]
+\textbf{Metodología:} Revisión de Caso.
+
+\textbf{Consigna:} Realizar un informe respecto al caso dado en clase e integrar alguna herramienta de las vistas en el práctico A06.
+
+\textbf{Requisitos del informe:}
+\begin{enumerate}
+  \item \textbf{Identificación:} Listar cada vulnerabilidad encontrada en el caso de estudio.
+  \item \textbf{Clasificación:} Asignar tipo CWE, severidad CVSS estimada y componente afectado.
+  \item \textbf{Integración de herramienta:} Describir cómo se usaría una herramienta de A06 (Nmap, Nikto, OpenVAS, etc.) para detectar cada hallazgo. Incluir comandos o capturas.
+  \item \textbf{Salvaguardas:} Proponer controles técnicos y administrativos.
+  \item \textbf{Riesgo residual:} Evaluar el riesgo antes y después de aplicar las salvaguardas.
+  \item \textbf{Conclusión ética:} Reflexionar sobre la responsabilidad del profesional que identifica estas vulnerabilidades.
+\end{enumerate}
+
+Subilo a la carpeta del Trabajo Integrador en Google Drive, otorgando permisos de comentario a \texttt{era.profe@gmail.com}.
+\end{clave}
+
+\textbf{Rúbrica de evaluación (según grilla de la cátedra):}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{} l c X @{}}
+\toprule
+\textbf{Criterio} & \textbf{Peso} & \textbf{Qué se espera para el «Excelente» (4)} \\
+\midrule
+A. Recopilación de información & 30\% & Utiliza de manera completa fuentes confiables (documentación CVE, OWASP, man pages de herramientas) y las cita correctamente. \\
+B. Elaboración de documentos & 30\% & Cumple adecuadamente con los formatos atento a la planilla de estandarización brindada por la cátedra. \\
+C. Elaboración de presentaciones & 10\% & Argumenta de manera sólida el inconveniente del caso y su solución. \\
+F. Consciencia de buenas prácticas & 30\% & Evidencia permanentemente el uso de buenas prácticas en el análisis y la documentación. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =========================================================
+\section{Fuentes y bibliografía}
+
+\subsection{Bibliografía obligatoria (según programa)}
+\begin{itemize}[leftmargin=*]
+  \item Chicano Tejada, E. (2023). \textit{Auditoría de seguridad informática. IFCT0109} (2.ª ed.). IC Editorial --- eLibro.
+  \item Elgueta, R. (s.f.). \textit{Guías de Clase unidad IV}. Material inédito. UCH.
+\end{itemize}
+
+\subsection{Bibliografía complementaria (según programa)}
+\begin{itemize}[leftmargin=*]
+  \item Bancal, D. (2022). \textit{Seguridad informática} (5.ª ed.). Ediciones ENI.
+  \item Evans, L. (2019). \textit{Ethical Hacking: The Ultimate Guide to Using Penetration Testing to Audit and Improve the Cybersecurity of Computer Networks for Beginners, Including Tips on Social Engineering}. Amazon Digital Services LLC --- KDP.
+  \item White, A. \& Clark, B. (2017). \textit{BTFM: Blue Team Field Manual}. CreateSpace Independent Publishing Platform.
+  \item ISO/IEC (2005). \textit{Information security management 27001}.
+\end{itemize}
+
+\subsection{Bibliografía específica de vulnerabilidades}
+\begin{itemize}[leftmargin=*]
+  \item OWASP Foundation. (2021). \textit{OWASP Top 10:2021}.
+  \item MITRE Corporation. \textit{CVE Dictionary}: \url{https://cve.mitre.org/}
+  \item NIST. \textit{National Vulnerability Database (NVD)}: \url{https://nvd.nist.gov/}
+  \item FIRST.org. \textit{CVSS v3.1 Specification Document}.
+\end{itemize}
+
+\subsection{Recursos web y laboratorios}
+\begin{itemize}[leftmargin=*]
+  \item TryHackMe (laboratorio de la materia): \url{https://tryhackme.com}
+  \item Sala recomendada para esta clase: \texttt{https://tryhackme.com/room/vulnversity}
+  \item Nmap Reference Guide: \url{https://nmap.org/book/man.html}
+  \item Nikto Documentation: \url{https://cirt.net/nikto2}
+  \item Searchsploit / Exploit-DB: \url{https://www.exploit-db.com/}
+\end{itemize}
+
+\end{document}
