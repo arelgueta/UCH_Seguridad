@@ -3,6 +3,57 @@
         "/^cd '/home/relgueta/Documentos/uch/ClasesCuadernillos/C8' && pdflatex -interaction=nonstopmode -halt-on-error CuadernilloClase08\\.tex$/": {
             "approve": true,
             "matchCommandLine": true
+        },
+        "/^ssh -T -o BatchMode=yes -o ConnectTimeout=5 git@github\\.com 2>&1 \\|\\| true$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^git remote set-url origin git@github\\.com:arelgueta/UDA_Seguridad\\.git && git push origin main$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^git remote set-url origin git@github\\.com:arelgueta/UCH_Seguridad\\.git && git status --short --branch && git remote -v$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^git status --short --branch && git remote -v && git log -1 --oneline$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^pwd; git -C /home/relgueta/Documentos/uch/ClasesCuadernillos status --short --branch; git -C /home/relgueta/Documentos/uch/ClasesCuadernillos remote -v; git -C /home/relgueta/Documentos/uch/ClasesCuadernillos log -1 --oneline$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^git -C /home/relgueta/Documentos/uch/ClasesCuadernillos diff -- \\.vscode/settings\\.json; git -C /home/relgueta/Documentos/uch/ClasesCuadernillos tag --list; find /home/relgueta/Documentos/uch/ClasesCuadernillos -type f -path '\\*/C\\*/\\*\\.pdf' -print$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^git -C /home/relgueta/Documentos/uch/ClasesCuadernillos ls-remote --heads --tags origin$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^git -C /home/relgueta/Documentos/uch/ClasesCuadernillos ls-remote --tags origin$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^git -C /home/relgueta/Documentos/uch/ClasesCuadernillos push origin main$/": {
+            "approve": true,
+            "matchCommandLine": true
+        },
+        "/^for pdf_path in /home/relgueta/Documentos/uch/ClasesCuadernillos/C\\*/\\*\\.pdf; do printf '%s  %s\\\\n' \"\\$\\(sha256sum \"\\$pdf_path\" \\| awk '\\{print \\$1\\}'\\)\" \"\\$\\(basename \"\\$pdf_path\"\\)\"; done \\| sort$/": {
+            "approve": true,
+            "matchCommandLine": true
         }
+    },
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/GuiaTryHackMe.aux": true,
+        "**/GuiaTryHackMe.log": true,
+        "**/GuiaTryHackMe.gz": true,
+        "**/GuiaTryHackMe.out": true
     }
 }
