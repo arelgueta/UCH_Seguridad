@@ -10,6 +10,9 @@ on:
       - ".github/workflows/build-pdfs.yml"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   upload-pdfs:
     name: Subir PDFs a la Release
@@ -35,12 +38,37 @@ jobs:
             }
             const latestRelease = releases[0];
             core.setOutput('upload_url', latestRelease.upload_url);
+            core.setOutput('release_id', latestRelease.id);
             core.info(`📦 Release encontrada: ${latestRelease.tag_name}`);
+
+      - name: Eliminar assets existentes
+        uses: actions/github-script@v7
+        env:
+          RELEASE_ID: ${{ steps.get_release.outputs.release_id }}
+        with:
+          script: |
+            const releaseId = Number(process.env.RELEASE_ID);
+            const { data: assets } = await github.rest.repos.listReleaseAssets({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: releaseId,
+              per_page: 100
+            });
+
+            for (const asset of assets.filter(({ name }) => name.endsWith('.pdf'))) {
+              core.info(`🗑️ Eliminando asset anterior: ${asset.name}`);
+              await github.rest.repos.deleteReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                asset_id: asset.id
+              });
+            }
 
       - name: Subir cada PDF como asset individual
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -euo pipefail
           # Obtener la URL de subida
           UPLOAD_URL="${{ steps.get_release.outputs.upload_url }}"
           # Eliminar el sufijo de plantilla para usar la URL base
@@ -48,21 +76,17 @@ jobs:
 
           echo "📂 Buscando archivos PDF en el repositorio..."
           # Buscar todos los PDFs en las carpetas C* (C1, C2, ... C15)
-          find . -type f -path "./C*/*.pdf" | while read -r pdf_path; do
+          find . -type f -path "./C*/*.pdf" -print0 | while IFS= read -r -d '' pdf_path; do
             # Obtener el nombre del archivo
             pdf_name=$(basename "$pdf_path")
             echo "⬆️ Subiendo: $pdf_name desde $pdf_path"
             
             # Subir el archivo usando curl
-            curl -X POST \
+            curl --fail-with-body --silent --show-error -X POST \
               -H "Authorization: token $GITHUB_TOKEN" \
               -H "Content-Type: application/pdf" \
               --data-binary @"$pdf_path" \
               "${BASE_URL}?name=${pdf_name}"
             
-            if [ $? -eq 0 ]; then
-              echo "✅ $pdf_name subido correctamente."
-            else
-              echo "❌ Error al subir $pdf_name"
-            fi
+            echo "✅ $pdf_name subido correctamente."
           done
