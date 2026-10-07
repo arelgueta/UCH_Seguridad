@@ -22,6 +22,11 @@ jobs:
       - name: Checkout repositorio
         uses: actions/checkout@v4
 
+      - name: Compilar cuadernillo Clase 11
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: C11/CuadernilloClase11.tex
+
       - name: Obtener información de la última Release
         id: get_release
         uses: actions/github-script@v7

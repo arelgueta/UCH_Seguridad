@@ -1,0 +1,410 @@
+% =========================================================
+%  CUADERNILLO DE ESTUDIO - CLASE 11
+%  Seguridad Aplicada a Sistemas de Información
+%  Compilar con: pdfLaTeX (Overleaf o TeX Live/MiKTeX)
+% =========================================================
+\documentclass[11pt,a4paper]{article}
+
+% ----------------- Paquetes -----------------
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\geometry{left=2.2cm,right=2.2cm,top=2.5cm,bottom=2.5cm}
+\usepackage[table]{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{fontawesome5}
+\usepackage{longtable}
+\usepackage{array}
+
+% ----------------- Colores -----------------
+\definecolor{azulmat}{RGB}{0,84,140}
+\definecolor{griscaja}{RGB}{245,245,245}
+\definecolor{verdesuave}{RGB}{232,244,232}
+\definecolor{naranjasuave}{RGB}{255,244,230}
+\definecolor{azulsuave}{RGB}{232,240,250}
+\definecolor{violetasuave}{RGB}{240,232,250}
+\definecolor{rojosuave}{RGB}{255,235,235}
+\definecolor{legalmarron}{RGB}{101,67,33}
+\definecolor{criticorojo}{RGB}{139,0,0}
+\definecolor{forenseazul}{RGB}{41,128,185}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=azulmat,
+  urlcolor=azulmat,
+  citecolor=azulmat
+}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{griscaja},
+  frame=single,
+  breaklines=true,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{green!60!black},
+  stringstyle=\color{red},
+  showstringspaces=false,
+  numbers=left,
+  numberstyle=\tiny\color{gray}
+}
+
+% ----------------- Cajas -----------------
+\newtcolorbox{definicion}[1][Definición]{%
+  enhanced, breakable, colback=azulsuave, colframe=azulmat,
+  fonttitle=\bfseries, title={#1}}
+\newtcolorbox{ejemplo}[1][Caso Real]{%
+  enhanced, breakable, colback=naranjasuave, colframe=orange!75!black,
+  fonttitle=\bfseries, title={#1}}
+\newtcolorbox{reflexion}[1][Para reflexionar]{%
+  enhanced, breakable, colback=verdesuave, colframe=green!55!black,
+  fonttitle=\bfseries, title={#1}}
+\newtcolorbox{clave}[1][Idea clave]{%
+  enhanced, breakable, colback=griscaja, colframe=black!70,
+  fonttitle=\bfseries, title={#1}}
+\newtcolorbox{respuesta}[1][Respuesta]{%
+  enhanced, breakable, colback=violetasuave, colframe=violet!60!black,
+  fonttitle=\bfseries, title={#1}}
+\newtcolorbox{alerta}[1][Atención Legal / Ética]{%
+  enhanced, breakable, colback=rojosuave, colframe=red!70!black,
+  fonttitle=\bfseries, title={#1}}
+\newtcolorbox{ley}[1][Marco Legal]{%
+  enhanced, breakable, colback=legalmarron!8, colframe=legalmarron!80!black,
+  fonttitle=\bfseries, title={#1}}
+\newtcolorbox{infraestructura}[1][Infraestructura Crítica]{%
+  enhanced, breakable, colback=criticorojo!5, colframe=criticorojo!80!black,
+  fonttitle=\bfseries, title={#1}}
+\newtcolorbox{forense}[1][Informática Forense]{%
+  enhanced, breakable, colback=forenseazul!8, colframe=forenseazul!80!black,
+  fonttitle=\bfseries, title={#1}}
+
+% ----------------- Encabezado -----------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Seguridad Aplicada a Sistemas de Información}
+\fancyhead[R]{\small Cuadernillo de Estudio --- Clase 11}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}{\large\bfseries\color{azulmat}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{azulmat!80!black}}{\thesubsection.}{0.6em}{}
+
+% ----------------- Portada -----------------
+\title{%
+  \rule{\textwidth}{1pt}\\[0.3cm]
+  \textbf{\Large Cuadernillo de Estudio --- Clase 11}\\[0.2cm]
+  \large Cibercrimen, Forense Digital y Protección de Infraestructuras Críticas\\[0.2cm]
+  \rule{\textwidth}{1pt}\\[0.3cm]
+  \normalsize Seguridad Aplicada a Sistemas de Información\\
+  Licenciatura en Sistemas de Información --- Facultad de Informática y Diseño\\
+  Docente: Ing.\ Rodrigo Atilio Elgueta\\[0.2cm]
+  \small Ciclo Académico Vigente
+}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+\tableofcontents
+\newpage
+
+% =========================================================
+\section{Objetivos de aprendizaje}
+Al finalizar esta clase, el estudiante será capaz de:
+\begin{itemize}[leftmargin=*]
+  \item Comprender la \textbf{historia y evolución del cibercrimen}, desde el \textit{phreaking} telefónico hasta las redes de crimen organizado transnacional.
+  \item Identificar las \textbf{modalidades delictivas} más frecuentes (ingeniería social, malware, fraudes, delitos contra la integridad sexual) y los mercados de la \textit{Dark Web}.
+  \item Dominar el \textbf{marco legal argentino} (Ley de Delitos Informáticos, Habeas Data, Grooming) y las dificultades de la \textbf{E-Evidence} (prueba digital).
+  \item Aplicar los protocolos de \textbf{Informática Forense} para la preservación de la escena del crimen digital y la cadena de custodia.
+  \item Definir \textbf{Infraestructuras Críticas (IC)}, analizar casos históricos de \textbf{ciberguerra} y comprender las estrategias globales de ciberdefensa.
+  \item Elaborar la \textbf{Actividad A09} (Informe de Ciberdelincuencia, Alojamiento de Datos y Legislación sobre IA).
+\end{itemize}
+
+% =========================================================
+\section{Historia: De ARPANET al Cibercrimen}
+La historia de los delitos informáticos está íntimamente ligada a la evolución de las redes. ARPANET, iniciada en 1969 por la agencia estadounidense ARPA, conectó centros de investigación mediante conmutación de paquetes. Suele repetirse que fue diseñada para sobrevivir a un ataque nuclear; esa explicación simplifica su historia. La descentralización y la resiliencia fueron propiedades importantes, pero no equivalen a una arquitectura segura.
+
+\begin{clave}[La vulnerabilidad estructural de Internet]
+Los protocolos básicos de Internet priorizan la interoperabilidad y el encaminamiento de paquetes; por sí solos, no ofrecen cifrado ni autenticación de extremo a extremo. No debe concluirse que toda comunicación sea insegura: mecanismos como TLS añaden esas protecciones. La seguridad depende de las capas y configuraciones que se incorporan, además de la red subyacente.
+\end{clave}
+
+\subsection{El origen: Phreaking y la Cultura Hacker}
+Antes de que existiera el cibercrimen comercial, existió el \textbf{Phreaking} (manipulación de sistemas telefónicos). En las décadas de 1960 y 1970, algunas redes telefónicas utilizaban tonos de señalización dentro de banda. Las \textbf{Blue Boxes} reproducían tonos, incluido el de \textbf{2600 Hz} en ciertos sistemas, para intentar controlar troncales y realizar llamadas sin autorización.
+
+De esta época nace la \textbf{Cultura Hacker}: movida por la curiosidad, el tiempo, el espíritu colaborativo y la ética del \textit{software libre}. Sin embargo, a medida que las computadoras se conectaron a las redes corporativas y bancarias en la década de los 80, la curiosidad mutó en \textbf{lucro}. Nacen los primeros fraudes ATM (\textit{skimming} de bandas magnéticas), el espionaje industrial y la piratería de software.
+
+% =========================================================
+\section{Modalidades Delictivas en la Red}
+El ciberdelincuente moderno utiliza un arsenal técnico y psicológico. A diferencia del hacker clásico, su motivación es económica, ideológica, de venganza o de abuso.
+
+\subsection{Ingeniería Social y Fraudes}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Phishing y Spearphishing:} La «pesca» de credenciales. El tradicional es masivo; el \textit{spearphishing} está altamente dirigido a un objetivo específico (ej. un empleado de finanzas) utilizando información previa para ganar confianza.
+  \item \textbf{Fraude Nigeriano y Estafas Anticipadas:} Promesas de grandes sumas de dinero que requieren un «pago adelantado» por supuestos gastos legales o sobornos.
+  \item \textbf{Esquemas Piramidales (Ponzi):} Adaptados a la era digital bajo nombres como «Flor de la Abundancia» o «Telar de los Sueños», que utilizan narrativas de empoderamiento y testimonios falsos para captar víctimas.
+  \item \textbf{Blanqueo de Capitales (Muleros):} Delincuentes que reclutan personas (a menudo mediante falsos empleos de «trabajo en casa») para usar sus cuentas bancarias o billeteras virtuales como puente para lavar dinero robado.
+\end{itemize}
+
+\subsection{Malware y Ataque a la Disponibilidad}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Troyanos y Spyware:} Software que crea «puertas traseras» o registra las pulsaciones del teclado (\textit{keyloggers}).
+  \item \textbf{Ransomware:} El secuestro de datos mediante cifrado. Evolucionó de bloquear la pantalla con falsas alertas policiales a cifrar servidores corporativos enteros (modelo \textit{Doble Extorsión}: robar y amenazar con publicar los datos si no se paga).
+  \item \textbf{Botnets y DDoS:} Redes de dispositivos «zombies» infectados que se alquilan en el mercado negro para lanzar ataques de Denegación de Servicio Distribuido, saturando servidores.
+  \item \textbf{Defacement:} La «pintada» digital. Modificar la página principal de un sitio web por motivaciones políticas, religiosas o de ciberguerra.
+\end{itemize}
+
+\subsection{Delitos contra la Integridad Sexual}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Grooming:} Contactar a una persona menor de edad, mediante comunicaciones electrónicas u otra tecnología de transmisión de datos, con el propósito de cometer un delito contra su integridad sexual. La figura penal argentina no exige que el autor sea adulto.
+  \item \textbf{Sextorsión:} Chantaje bajo la amenaza de publicar imágenes íntimas de la víctima.
+  \item \textbf{Creepware (RATs):} Troyanos de Acceso Remoto que permiten al atacante encender la webcam y el micrófono de la víctima en modo incógnito.
+\end{itemize}
+
+\begin{ejemplo}[El caso BlackShades]
+Un joven fue condenado tras utilizar un \textit{creepware} llamado BlackShades (adquirido por unos pocos euros en internet) para espiar la webcam de cientos de mujeres, incluyendo a una Miss Teen USA, extorsionándolas para obtener más material. Esto desencadenó una operación internacional del FBI que resultó en cientos de arrestos en múltiples países.
+\end{ejemplo}
+
+\subsection{Deep Web, Dark Web y el RaaS}
+La \textbf{Deep Web} es simplemente la parte de Internet no indexada por buscadores (bases de datos, intranets). La \textbf{Dark Web} es un subconjunto que requiere software específico (como \textbf{TOR} - \textit{The Onion Router}) para acceder, garantizando el anonimato mediante cifrado en capas y enrutamiento aleatorio.
+
+Si bien TOR fue creado por la Marina de los EE.UU. y hoy es vital para periodistas, disidentes políticos y ONGs, su anonimato alberga mercados negros donde se trafican armas, datos de tarjetas de crédito y \textbf{RaaS (Ransomware as a Service)}. En el modelo RaaS, los desarrolladores del malware alquilan la herramienta a «afiliados» a cambio de un porcentaje de los rescates, democratizando el cibercrimen.
+
+% =========================================================
+\section{Marco Legal Argentino: La Ley de Delitos Informáticos}
+El Derecho Penal argentino incorporó figuras específicas mediante la \textbf{Ley 26.388}, modificando el Código Penal para proteger los dispositivos y los datos.
+
+\begin{ley}[Principales Figuras Penales (Ley 26.388)]
+\begin{longtable}{@{} p{4cm} p{10cm} @{}}
+\toprule
+\textbf{Artículo / Delito} & \textbf{Conducta Sancionada} \\
+\midrule
+\textbf{Art. 128} (ASI) & Producción, financiamiento, comercio o distribución de Material de Abuso Sexual Infantil. (La Ley 27.436 incorporó la \textbf{tenencia simple}). \\
+\midrule
+\textbf{Art. 153} (Violación de correspondencia) & Abrir, interceptar o apoderarse indebidamente de comunicaciones electrónicas privadas. \\
+\midrule
+\textbf{Art. 153 bis} (Acceso ilegítimo) & Acceder sin autorización a un sistema o dato informático de acceso restringido. (Agravante si es a un organismo público o financiero). \\
+\midrule
+\textbf{Art. 155} (Publicación indebida) & Publicar comunicaciones electrónicas privadas no destinadas a la publicidad, causando perjuicio. \\
+\midrule
+\textbf{Art. 157} (Revelación de secretos) & Funcionario público que revela datos que por ley deben ser secretos. \\
+\midrule
+\textbf{Art. 157 bis} (Datos personales) & Acceder ilegítimamente a un banco de datos personales, o revelar/insertar datos violando la confidencialidad. \\
+\midrule
+\textbf{Art. 173 inc. 16} (Estafa informática) & Defraudar mediante cualquier técnica de manipulación informática que altere el normal funcionamiento de un sistema. \\
+\midrule
+\textbf{Art. 183} (Daño informático) & Alterar, destruir o inutilizar datos, programas o sistemas. Incluye la distribución de malware. \\
+\midrule
+\textbf{Art. 197} (Interrupción de comunicaciones) & Entorpecer comunicaciones (incluye ataques DDoS). \\
+\midrule
+\textbf{Art. 255} (Alteración de evidencia) & Borrar o modificar logs o registros digitales destinados a servir de prueba. \\
+\bottomrule
+\end{longtable}
+\end{ley}
+
+\begin{ley}[Ley 26.904: Grooming]
+Incorpora el \textbf{Art. 131} al Código Penal: prevé prisión de seis meses a cuatro años para quien, por medio de comunicaciones electrónicas, telecomunicaciones u otra tecnología de transmisión de datos, contacte a una persona menor de edad con el propósito de cometer cualquier delito contra su integridad sexual.
+\end{ley}
+
+\subsection{Dificultades del Derecho y la E-Evidence}
+El ciberdelito presenta una \textbf{alta cifra oculta} (bajo índice de denuncias) debido al desconocimiento de las víctimas, la desconfianza en la resolución judicial y el temor de las empresas a la pérdida de reputación.
+
+La obtención de \textbf{E-Evidence} (prueba digital) choca con la \textbf{transnacionalidad} de Internet. Un juez argentino puede necesitar datos de un servidor en otro continente, enfrentándose a tres problemas:
+\begin{enumerate}
+  \item La empresa no tiene representación legal en el país (requiere exhorto internacional).
+  \item La empresa tiene sede local, pero los servidores están en el extranjero.
+  \item La empresa se niega a entregar datos amparándose en sus propias políticas de privacidad o en la legislación de su país de origen.
+\end{enumerate}
+
+% =========================================================
+\section{Informática Forense: La Escena del Crimen Digital}
+Para el FBI, la informática forense es la ciencia encargada de adquirir, preservar, recuperar y presentar datos procesados electrónicamente. La evidencia digital es \textbf{latente, volátil, fácil de alterar y transnacional}.
+
+\begin{forense}[Las 6 Etapas de la Adquisición de Evidencia]
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Preservar:} Asegurar el lugar del hecho mediante un cerco perimetral. Nadie debe tocar los dispositivos.
+  \item \textbf{Observar:} Descripción metódica y lógica del lugar en búsqueda de indicios.
+  \item \textbf{Fijar:} Fotografiar y filmar los elementos de hardware desde lo general hacia lo particular, incluyendo cableados y pantallas.
+  \item \textbf{Clasificar:} Registrar números de serie, marcas, modelos y versiones de sistemas operativos.
+  \item \textbf{Recolectar:} Adquirir los datos con herramientas y procedimientos documentados, usando bloqueadores de escritura cuando corresponda. Calcular hashes criptográficos de la fuente y de la imagen permite comparar su integridad; un hash, por sí solo, no demuestra que la adquisición haya sido completa ni correcta. El aislamiento de red de un dispositivo móvil debe decidirse según el protocolo, su estado y la posibilidad de preservar datos volátiles.
+  \item \textbf{Traslado:} Mantener la \textbf{Cadena de Custodia} documentando cada persona que tuvo contacto con la evidencia.
+\end{enumerate}
+\end{forense}
+
+% =========================================================
+\section{Infraestructuras Críticas (IC) y Ciberguerra}
+A diario dependemos de centrales eléctricas, sistemas de agua, redes bancarias y hospitales. Estas son las \textbf{Infraestructuras Críticas}.
+
+\begin{infraestructura}[Definición y Criterios (Resolución 1523)]
+Las IC son instalaciones, redes y servicios indispensables para el funcionamiento de la sociedad, cuya destrucción o perturbación impactaría significativamente al Estado.
+\textbf{Criterios de Impacto para catalogar una IC:}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Vida humana:} Riesgo de pérdida de vida o grave amenaza a la salud.
+  \item \textbf{Económico:} Daño grave a la estructura productiva o financiera.
+  \item \textbf{Medio ambiente:} Daño grave al espacio natural.
+  \item \textbf{Derechos humanos:} Restricción colectiva de libertades fundamentales.
+  \item \textbf{Impacto público:} Grave conmoción social.
+  \item \textbf{Funciones del Estado:} Afectación a los poderes Ejecutivo, Legislativo o Judicial.
+  \item \textbf{Soberanía e Integridad Territorial:} Vulneración de fronteras.
+\end{itemize}
+\end{infraestructura}
+
+\subsection{Ciberdelito vs. Ciberguerra}
+Mientras el \textbf{ciberdelito} es materia de \textit{Seguridad Interior} (lucro, crimen organizado), la \textbf{ciberguerra} es materia de \textit{Defensa Nacional}. En la ciberguerra, el ciberespacio es el campo de batalla y las armas son los programas informáticos dirigidos a sistemas \textbf{SCADA} (Sistemas de Control de Supervisión y Adquisición de Datos) que controlan el mundo físico.
+
+\begin{ejemplo}[Casos Históricos de Ciberguerra y Sabotaje]
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Stuxnet (Irán):} Un gusano informático que tomó el control de las centrifugadoras nucleares de Natanz, haciéndolas girar a velocidades destructivas mientras mostraba lecturas normales a los operadores. Fue el primer ataque digital con destrucción física.
+  \item \textbf{BlackEnergy e Industroyer (Ucrania):} Malware diseñado específicamente para manipular los interruptores de subestaciones eléctricas, provocando apagones masivos en regiones enteras.
+  \item \textbf{WannaCry (Reino Unido):} Un ransomware que paralizó el sistema de salud británico (NHS), impidiendo el acceso a historiales médicos y cancelando cirugías.
+  \item \textbf{Colonial Pipeline (EE.UU.):} Un ataque de ransomware que obligó a cerrar el oleoducto más grande del país, generando pánico y escasez de combustible en la costa este.
+\end{itemize}
+\end{ejemplo}
+
+\begin{alerta}[El problema de la Atribución]
+En la guerra convencional, si un misil impacta en tu territorio, sabés quién lo disparó. En la ciberguerra, el atacante utiliza \textit{proxies}, servidores comprometidos en terceros países y técnicas de ofuscación. El \textbf{anonimato} plantea un riesgo geopolítico letal: un ataque de falsa bandera podría provocar una respuesta militar kinética (convencional) contra el país equivocado.
+\end{alerta}
+
+% =========================================================
+\section{Protección de IC y Estrategias Globales}
+Proteger las IC requiere un enfoque que va más allá de la seguridad informática tradicional, involucrando al Estado y al sector privado.
+
+\subsection{Pasos para la Protección}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Identificar e Inventariar:} Designar formalmente qué sistemas son IC.
+  \item \textbf{Analizar Riesgos:} Confeccionar mapas de riesgos y escenarios de ataques.
+  \item \textbf{Tratar el Riesgo:} Mitigar, Evitar o Derivar (seguros).
+  \item \textbf{Planes de Contingencia:} Protocolos de recuperación de desastres.
+  \item \textbf{Formar CSIRT / CERT:} Equipos de Respuesta ante Incidentes.
+\end{enumerate}
+
+\subsection{El Panorama Global}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Argentina:} Pionera en la región al crear el ARCERT en la década del 90. Hoy, el \textbf{CERT.ar} coordina la respuesta nacional y el Comité de Ciberseguridad dicta las estrategias de protección.
+  \item \textbf{Unión Europea:} A través de la \textbf{Estrategia de Ciberseguridad para la Década Digital} y la directiva \textbf{NIS2}, obliga a los sectores críticos a reportar incidentes y gestionar riesgos, impulsando la soberanía tecnológica y la certificación de dispositivos.
+  \item \textbf{Estados Unidos:} El \textbf{NIST} publica marcos de gestión de riesgos de ciberseguridad y \textbf{CISA} coordina la respuesta y protección de sectores críticos. Los plazos de notificación dependen de la norma aplicable, el sector y el tipo de incidente; no existe un plazo universal de 72 horas para todas las organizaciones.
+  \item \textbf{OTAN (CCDCOE):} Organiza anualmente \textbf{Locked Shields}, el ejercicio de ciberdefensa más grande del mundo, donde equipos (Red Team vs Blue Team) simulan ataques a infraestructuras críticas virtualizadas bajo presión extrema.
+\end{itemize}
+
+% =========================================================
+\section{Inteligencia Artificial: El Nuevo Desafío Legal}
+La IA plantea dilemas que las leyes tradicionales no contemplaban:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Responsabilidad Civil:} Si un sistema autónomo comete un error fatal, ¿quién responde?
+  \item \textbf{Deepfakes:} Amenazan la reputación, facilitan el fraude y alteran procesos democráticos.
+  \item \textbf{Privacidad:} El entrenamiento de modelos con datos extraídos de la web choca con el Habeas Data.
+  \item \textbf{Reglamento europeo de IA (AI Act):} Adoptado en 2024, establece obligaciones según el nivel de riesgo; prohíbe determinadas prácticas y fija requisitos para sistemas de alto riesgo. Su aplicación es escalonada. No constituye una ley argentina ni reemplaza las normas de protección de datos.
+\end{itemize}
+
+% =========================================================
+\section{Glosario de conceptos clave}
+\begin{description}[leftmargin=!, labelwidth=3.5cm, font=\bfseries]
+  \item[Phreaking] Hackeo de sistemas telefónicos mediante manipulación de tonos de audio.
+  \item[Skimming] Clonación de tarjetas de débito/crédito mediante dispositivos lectores ocultos en cajeros.
+  \item[RaaS] \textit{Ransomware as a Service}. Modelo de negocio donde se alquila malware a cambio de un porcentaje del rescate.
+  \item[TOR] \textit{The Onion Router}. Red de anonimato que enruta el tráfico en capas cifradas.
+  \item[E-Evidence] Prueba digital. Información de valor almacenada o transmitida por dispositivos electrónicos.
+  \item[Cadena de Custodia] Procedimiento documentado que garantiza la integridad y no alteración de la evidencia desde su hallazgo hasta su presentación en juicio.
+  \item[Bolsa de Faraday] Recipiente que bloquea los campos electromagnéticos, impidiendo que un celular reciba señales de borrado remoto.
+  \item[SCADA] Sistemas de control industrial que gestionan infraestructuras físicas (eléctricas, hídricas, nucleares).
+  \item[CSIRT] Equipo de Respuesta ante Incidentes de Seguridad Informática.
+\end{description}
+
+% =========================================================
+\section{Autoevaluación}\label{sec:autoeval}
+Respondé por escrito; luego verificá en la Sección~\ref{sec:respuestas}.
+
+\begin{enumerate}[leftmargin=*]
+  \item ¿Qué vulnerabilidad estructural heredada del diseño original de ARPANET explica por qué Internet es inherentemente inseguro para la transmisión de datos confidenciales?
+  \item Explicá la diferencia técnica y legal entre el \textbf{Phishing} tradicional y el \textbf{Spearphishing}. ¿Por qué este último es más peligroso para las organizaciones?
+  \item Un perito informático llega a la escena de un crimen donde hay una computadora encendida y un celular. ¿Cuáles son los primeros pasos que debe seguir según el protocolo forense y por qué es vital el uso de una Bolsa de Faraday para el celular?
+  \item ¿Por qué el caso \textbf{Stuxnet} marcó un punto de inflexión en la historia de la ciberguerra y las Infraestructuras Críticas?
+  \item En el marco de la Ley 26.388, ¿qué artículo se aplica si un empleado de una empresa utiliza su acceso legítimo para extraer la base de datos de clientes y venderla a la competencia?
+\end{enumerate}
+
+% =========================================================
+\section{Respuestas de la Autoevaluación}\label{sec:respuestas}
+
+\subsection*{Pregunta 1: Vulnerabilidad estructural de ARPANET}
+\begin{respuesta}
+ARPANET fue una red experimental de conmutación de paquetes iniciada en 1969. La afirmación de que su propósito central era sobrevivir a un ataque nuclear es una simplificación histórica. Los protocolos básicos de Internet no proporcionan por sí solos cifrado ni autenticación de extremo a extremo; estos controles se incorporan mediante protocolos y configuraciones adicionales, como TLS.
+\end{respuesta}
+
+\subsection*{Pregunta 2: Phishing vs. Spearphishing}
+\begin{respuesta}
+El \textbf{Phishing} tradicional es un ataque masivo e indiscriminado («pesca con red») que busca usuarios desprevenidos. El \textbf{Spearphishing} («pesca con arpón») es un ataque altamente dirigido a un individuo u organización específica. El atacante investiga previamente a la víctima (OSINT, redes sociales) para personalizar el mensaje, haciéndolo parecer legítimo (ej. un correo simulado del CEO o del departamento de IT). Es más peligroso porque supera los filtros antispam y la sospecha natural del usuario, siendo la puerta de entrada principal para ataques de Ransomware corporativo.
+\end{respuesta}
+
+\subsection*{Pregunta 3: Protocolo Forense y Bolsa de Faraday}
+\begin{respuesta}
+El perito debe preservar la escena y documentar el estado de los dispositivos antes de intervenir. Una computadora encendida puede contener evidencia volátil; apagarla sin evaluación puede destruirla, pero mantenerla encendida también puede modificar datos. La decisión debe tomarla personal capacitado conforme al protocolo aplicable. El aislamiento de red del celular, por ejemplo mediante una \textbf{Bolsa de Faraday}, puede reducir el riesgo de borrado remoto, pero debe ponderarse con el estado del dispositivo y documentarse; no es una instrucción automática para cualquier persona que encuentre el equipo.
+\end{respuesta}
+
+\subsection*{Pregunta 4: Stuxnet y las IC}
+\begin{respuesta}
+Stuxnet se cita entre los primeros casos ampliamente documentados de malware que produjo efectos físicos en un proceso industrial. Se diseñó para afectar sistemas de control asociados a centrifugadoras en Natanz, mientras ocultaba parte de sus efectos a los operadores. Su atribución y contexto geopolítico deben tratarse con cautela: no todo sabotaje digital puede clasificarse automáticamente como ciberguerra.
+\end{respuesta}
+
+\subsection*{Pregunta 5: Empleado infiel y Ley 26.388}
+\begin{respuesta}
+Podría resultar aplicable el \textbf{Art. 157 bis}, en particular si se prueba que el empleado reveló ilegítimamente información de un banco de datos personales cuyo secreto debía preservar. Tener acceso por el rol no resuelve por sí solo la calificación: importan la naturaleza de los datos, el deber de confidencialidad y las circunstancias. El \textbf{Art. 153 bis} podría analizarse si además accedió sin autorización a sistemas o datos restringidos; la calificación final corresponde a la autoridad judicial.
+\end{respuesta}
+
+% =========================================================
+\section{Actividad A09: Informe Legal y de IA}
+
+\begin{clave}[Consigna A09 --- Ciberdelincuencia, Protección de Datos e IA]
+\textbf{Metodología:} Trabajo de Investigación.\\[0.2cm]
+\textbf{Consigna:} Teniendo en cuenta la legislación existente, elaborar un informe respecto al \textbf{alojamiento y protección de datos en el país y en el exterior}. \textbf{¿Qué legislación existe respecto a IA?}\\[0.2cm]
+\textbf{Requisitos del informe:}
+\begin{enumerate}[leftmargin=*]
+  \item Análisis de la Ley 25.326 y los desafíos del alojamiento de datos en servidores extranjeros (la «Nube») y la jurisdicción aplicable.
+  \item Comparativa breve con el GDPR (Europa) o el AI Act.
+  \item Análisis de la Ley 26.388 aplicada a un caso real de ciberdelito o ciberguerra.
+  \item Estado actual de la legislación sobre Inteligencia Artificial (vacíos legales, dilemas éticos, responsabilidad civil).
+  \item Reflexión sobre el impacto de estas leyes en el diseño de arquitecturas de software.
+\end{enumerate}
+Subilo a la carpeta del Trabajo Integrador en Google Drive, otorgando permisos de comentario a \texttt{era.profe@gmail.com}.
+\end{clave}
+
+\textbf{Rúbrica de evaluación (A09):}
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{} l c X @{}}
+\toprule
+\textbf{Criterio} & \textbf{Peso} & \textbf{Qué se espera para el «Excelente» (4)} \\
+\midrule
+A. Recopilación & 30\% & Utiliza de manera completa fuentes confiables (leyes oficiales, fallos, doctrina) y las cita correctamente. \\
+B. Elaboración de documentos & 30\% & Cumple adecuadamente con los formatos atento a la planilla de estandarización. \\
+C. Elaboración de presentaciones & 10\% & Argumenta de manera sólida el inconveniente legal/técnico y su solución. \\
+F. Consciencia de buenas prácticas & 30\% & Evidencia permanentemente el uso de buenas prácticas, criterio ético y respeto por la privacidad. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =========================================================
+\section{Fuentes y bibliografía}
+
+\begin{itemize}[leftmargin=*]
+  \item Ley 26.388 (2008). \textit{Delitos Informáticos}. Código Penal de la Nación Argentina.
+  \item Ley 25.326 (2000). \textit{Protección de los Datos Personales}.
+  \item Ley 26.904 (2013). \textit{Grooming}.
+  \item Ley 27.436 (2018). \textit{Tenencia de Material de Abuso Sexual Infantil}.
+  \item Resolución 1523 (2019). \textit{Infraestructuras Críticas y de la Información}. Secretaría de Gobierno de Modernización.
+  \item Resolución 829 (2019). \textit{Estrategia Nacional de Ciberseguridad}.
+  \item Consejo de la Unión Europea (2021). \textit{Conclusiones sobre la Estrategia de Ciberseguridad de la UE para la Década Digital}.
+  \item Unión Europea (2024). \textit{Reglamento (UE) 2024/1689 de Inteligencia Artificial}. \url{https://eur-lex.europa.eu/eli/reg/2024/1689/oj}
+  \item Chicano Tejada, E. (2023). \textit{Auditoría de seguridad informática. IFCT0109} (2.ª ed.). IC Editorial --- eLibro.
+  \item Evans, L. (2019). \textit{Ethical Hacking: The Ultimate Guide to Using Penetration Testing...}. Amazon Digital Services LLC --- KDP.
+  \item Lizio, G. (2020). \textit{Curso: El cibercrimen, la ciberseguridad y la investigación criminal de delitos informáticos}. INAP.
+  \item Lizio, G. (2022). \textit{Curso: Introducción a la protección de infraestructuras críticas}. INAP.
+\end{itemize}
+
+\end{document}
