@@ -25,7 +25,11 @@ jobs:
       - name: Compilar cuadernillo Clase 11
         uses: xu-cheng/latex-action@v3
         with:
-          root_file: C11/CuadernilloClase11.tex
+          root_file: CuadernilloClase11.tex
+          working_directory: C11
+
+      - name: Verificar PDF de Clase 11
+        run: test -s C11/CuadernilloClase11.pdf
 
       - name: Obtener información de la última Release
         id: get_release
